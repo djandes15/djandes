@@ -812,13 +812,37 @@
                 } else {
                     fallbackToLocalData();
                 }
+
+                // Load box options from Supabase
+                const { data: boxData, error: boxError } = await window.supabaseClient
+                    .from('box_options')
+                    .select('*')
+                    .order('id', { ascending: true });
+                if (!boxError && boxData) {
+                    window.appData.opsiBoxGlobal = boxData;
+                    localStorage.setItem('cached_box_options', JSON.stringify(boxData));
+                } else {
+                    fallbackToLocalBoxData();
+                }
             } catch (e) {
                 console.error(e);
                 fallbackToLocalData();
+                fallbackToLocalBoxData();
             }
 
             renderCategories();
             renderViews();
+        }
+
+        function fallbackToLocalBoxData() {
+            if (!window.appData.opsiBoxGlobal || window.appData.opsiBoxGlobal.length === 0) {
+                const cachedBox = localStorage.getItem('cached_box_options');
+                if (cachedBox) {
+                    window.appData.opsiBoxGlobal = JSON.parse(cachedBox);
+                } else if (window.DEFAULT_DATA?.opsiBoxGlobal) {
+                    window.appData.opsiBoxGlobal = window.DEFAULT_DATA.opsiBoxGlobal;
+                }
+            }
         }
 
         function fallbackToLocalData() {
@@ -830,6 +854,7 @@
             if (!window.appData.siteSettings && window.DEFAULT_DATA?.siteSettings) {
                 window.appData.siteSettings = window.DEFAULT_DATA.siteSettings;
             }
+            fallbackToLocalBoxData();
             renderCategories();
             renderViews();
         }
@@ -868,6 +893,18 @@
             }
         };
 
+        function getProductQtyInCart(productId) {
+            let totalQty = 0;
+            if (window.appData.cart) {
+                Object.keys(window.appData.cart).forEach(key => {
+                    if (key === String(productId) || key.startsWith(productId + '_')) {
+                        totalQty += window.appData.cart[key] || 0;
+                    }
+                });
+            }
+            return totalQty;
+        }
+
         function renderCategories() {
             const select = document.getElementById('category-filter');
             const productCategories = window.appData.products.map(p => p.category).filter(Boolean);
@@ -905,7 +942,8 @@
             }
 
             grid.innerHTML = items.map(p => {
-                const qty = window.appData.cart[p.id] || 0;
+                const isCustom = p.opsi_produk_aktif || p.tipe_produk === 'paket_snack_box';
+                const qty = isCustom ? getProductQtyInCart(p.id) : (window.appData.cart[p.id] || 0);
                 const isHabis = p.status_stok === 'habis';
                 const isEditing = window.appData.editingPrices[p.id];
                 let imageUrl = p.image || '';
@@ -914,8 +952,32 @@
 
                 const isLocked = window.appData.isPelunasanMode || window.appData.isReadOnlyMode;
 
+                let actionHtml = '';
+                if (isCustom) {
+                    actionHtml = `
+                        <div class="flex items-center justify-between mt-1 w-full gap-2">
+                            ${qty > 0 ? `<span class="text-xs font-semibold text-amber-600 px-1 whitespace-nowrap">Di Struk: ${qty}</span>` : ''}
+                            <button onclick="${isLocked ? 'return' : `window.handlePosCustomProduct(${p.id})`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${qty > 0 ? 'px-2 py-1 text-[10px]' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed text-gray-400' : ''}">
+                                ${qty > 0 ? 'Kustom Lagi' : 'Kustomisasi'}
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <div class="flex items-center justify-between mt-1 w-full">
+                            ${qty > 0 ? `
+                                <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-7 h-7 rounded-lg text-sm ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
+                                <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded py-1 focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
+                            ` : ''}
+                            <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${qty > 0 ? 'w-7 h-7' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
+                                ${qty > 0 ? '+' : 'Tambah'}
+                            </button>
+                        </div>
+                    `;
+                }
+
                 return `
-                    <div class="bg-white rounded-xl shadow-2xs overflow-hidden flex flex-col border ${qty > 0 ? 'border-amber-500 ring-1 ring-amber-500' : 'border-gray-200'} ${isHabis ? 'opacity-60' : ''}">
+                    <div class="bg-white rounded-xl shadow-2xs overflow-hidden flex flex-col border ${qty > 0 ? 'border-amber-500 ring-1 ring-amber-500 bg-amber-50/5' : 'border-gray-200'} ${isHabis ? 'opacity-60' : ''}">
                         <img src="${imageUrl}" alt="${p.name}" class="h-28 w-full object-cover bg-gray-200 cursor-zoom-in" onerror="this.src='https://placehold.co/150?text=No+Image'" onclick="window.showPosGallery(${p.id})">
                         <div class="p-3 flex flex-col flex-grow justify-between gap-1.5">
                             <div>
@@ -938,16 +1000,8 @@
                                 </div>
                             </div>
                             ${isHabis ?
-                        `<span class="text-center text-xs bg-red-100 text-red-600 font-bold py-1 rounded mt-1">Habis</span>` :
-                        `<div class="flex items-center justify-between mt-1">
-                                    ${qty > 0 ? `
-                                        <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-7 h-7 rounded-lg text-sm ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
-                                        <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded py-1 focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
-                                    ` : ''}
-                                    <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${qty > 0 ? 'w-7 h-7' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
-                                        ${qty > 0 ? '+' : 'Tambah'}
-                                    </button>
-                                </div>`
+                        `<span class="text-center text-xs bg-red-100 text-red-650 font-bold py-1 rounded mt-1">Habis</span>` :
+                        actionHtml
                     }
                         </div>
                     </div>
@@ -963,10 +1017,31 @@
             }
 
             tbody.innerHTML = items.map(p => {
-                const qty = window.appData.cart[p.id] || 0;
+                const isCustom = p.opsi_produk_aktif || p.tipe_produk === 'paket_snack_box';
+                const qty = isCustom ? getProductQtyInCart(p.id) : (window.appData.cart[p.id] || 0);
                 const isHabis = p.status_stok === 'habis';
                 const isEditing = window.appData.editingPrices[p.id];
                 const isLocked = window.appData.isPelunasanMode || window.appData.isReadOnlyMode;
+
+                let actionHtml = '';
+                if (isCustom) {
+                    actionHtml = `
+                        <div class="flex items-center justify-center gap-1">
+                            ${qty > 0 ? `<span class="text-[10px] font-bold text-amber-600 mr-1">${qty}x</span>` : ''}
+                            <button onclick="${isLocked ? 'return' : `window.handlePosCustomProduct(${p.id})`}" class="bg-blue-600 hover:bg-blue-705 rounded px-2 py-1 text-xs font-bold text-white ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
+                                ${qty > 0 ? 'Kustom' : 'Kustom'}
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="w-6 h-6 flex items-center justify-center bg-gray-100 border border-gray-300 rounded text-xs font-bold ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
+                            <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
+                            <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="w-6 h-6 flex items-center justify-center bg-amber-500 rounded text-xs font-bold text-white ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
+                        </div>
+                    `;
+                }
 
                 return `
                     <tr class="${qty > 0 ? 'bg-amber-50/50 font-medium' : ''} ${isHabis ? 'opacity-50' : ''}">
@@ -991,11 +1066,7 @@
                         <td class="p-2 w-24 text-center whitespace-nowrap shrink-0">
                             ${isHabis ?
                         `<span class="text-xs text-red-500 font-semibold">Habis</span>` :
-                        `<div class="flex items-center justify-center gap-1.5">
-                                    <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="w-6 h-6 flex items-center justify-center bg-gray-100 border border-gray-300 rounded text-xs font-bold ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
-                                    <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
-                                    <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="w-6 h-6 flex items-center justify-center bg-amber-500 rounded text-xs font-bold text-white ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
-                                </div>`
+                        actionHtml
                     }
                         </td>
                     </tr>
@@ -1051,6 +1122,262 @@
                 }
             }
             renderViews();
+        };
+
+        // ─────────────────────────────────────────────────────────────
+        // KUSTOMISASI BOX di POS: Modal Pilih Box & Snack Box
+        // ─────────────────────────────────────────────────────────────
+        window.handlePosCustomProduct = function (productId) {
+            if (window.appData.isPelunasanMode || window.appData.isReadOnlyMode) return;
+            const product = window.appData.products.find(p => p.id == productId);
+            if (!product) return;
+
+            const boxes = (window.appData.opsiBoxGlobal || []).filter(b =>
+                b.kategori_berlaku && b.kategori_berlaku.includes(product.category)
+            );
+
+            if (boxes.length === 0) {
+                window.showNotification('Tidak ada opsi box untuk produk ini', 'warning');
+                return;
+            }
+
+            if (product.tipe_produk === 'paket_snack_box' && product.komponen_paket) {
+                window.showPosSnackBoxModal(product, boxes);
+            } else {
+                window.showPosBoxModal(product, boxes, null);
+            }
+        };
+
+        window.showPosBoxModal = function (product, boxes, preSelectedComponents) {
+            const modal = document.getElementById('pos-box-modal');
+            const title = document.getElementById('pos-box-modal-title');
+            const grid = document.getElementById('pos-box-options-grid');
+            const qtyInput = document.getElementById('pos-box-qty');
+            const searchInput = document.getElementById('pos-box-search-input');
+
+            // Reset search input
+            searchInput.value = '';
+            title.textContent = 'Pilih Box untuk: ' + product.name;
+            qtyInput.value = product.minimal_order || 1;
+            qtyInput.min = product.minimal_order || 1;
+
+            function drawGrid(filteredBoxes) {
+                if (filteredBoxes.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-12 text-xs">Pencarian tidak ditemukan</div>`;
+                    return;
+                }
+                grid.innerHTML = filteredBoxes.map(b => {
+                    const imgUrl = (b.gambar && b.gambar.startsWith('http')) ? b.gambar
+                        : (window.CONFIG?.IMAGEKIT_URL_ENDPOINT || '') + (b.gambar || '');
+                    return `
+                        <div class="pos-box-card border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col p-1.5" data-box-id="${b.id}" onclick="window.selectPosBox(this, '${b.id}')">
+                            <div class="relative aspect-[4/3] rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 mb-1.5 shrink-0 bg-gray-50 flex items-center justify-center">
+                                <img src="${imgUrl}" alt="${b.nama}"
+                                    class="w-full h-full object-cover cursor-zoom-in"
+                                    onerror="this.src='https://placehold.co/150?text=No+Img'"
+                                    onclick="event.stopPropagation(); window.showPosBoxGallery('${b.id}')">
+                            </div>
+                            <div class="flex-1 flex flex-col justify-center px-1 text-center min-w-0">
+                                <p class="text-gray-850 dark:text-gray-200 font-bold text-xs truncate leading-tight mb-1" title="${b.nama}">${b.nama}</p>
+                                <span class="inline-block bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-extrabold text-[10px] px-1.5 py-0.5 rounded-full self-center border border-emerald-100 dark:border-emerald-900/50">
+                                    +Rp ${Number(b.tambahan_harga).toLocaleString('id-ID')}
+                                </span>
+                            </div>
+                        </div>`;
+                }).join('');
+
+                const firstCard = grid.querySelector('.pos-box-card');
+                if (firstCard) firstCard.classList.add('selected');
+            }
+
+            drawGrid(boxes);
+
+            searchInput.oninput = function () {
+                const keyword = this.value.toLowerCase().trim();
+                const filtered = boxes.filter(b => b.nama.toLowerCase().includes(keyword));
+                drawGrid(filtered);
+            };
+
+            document.getElementById('pos-box-confirm-btn').onclick = function () {
+                const selected = grid.querySelector('.pos-box-card.selected');
+                if (!selected) { window.showNotification('Pilih box terlebih dahulu', 'warning'); return; }
+                const boxId = selected.dataset.boxId;
+                const box = boxes.find(b => b.id == boxId);
+                const qty = parseInt(qtyInput.value) || product.minimal_order || 1;
+                window.confirmPosBoxSelection(product, box, preSelectedComponents, qty);
+                window.closePosBoxModal();
+            };
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.selectPosBox = function (el, boxId) {
+            document.querySelectorAll('#pos-box-options-grid .pos-box-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        };
+
+        window.closePosBoxModal = function () {
+            document.getElementById('pos-box-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+
+        window.confirmPosBoxSelection = function (product, box, components, qty) {
+            const cartKey = `${product.id}_${box.id}`;
+            if (!window.appData.cartInfo) window.appData.cartInfo = {};
+            window.appData.cart[cartKey] = qty;
+            window.appData.cartInfo[cartKey] = {
+                productId: product.id,
+                boxOptionId: box.id,
+                boxOptionName: box.nama,
+                boxOptionPrice: box.tambahan_harga,
+                components: components || []
+            };
+            window.showNotification(`${qty}x ${product.name} + ${box.nama} ditambahkan!`, 'success');
+            renderViews();
+        };
+
+        window.showPosSnackBoxModal = function (product, boxes) {
+            const { produk_id_yang_boleh_dipilih, jumlah_wajib_pilih } = product.komponen_paket;
+            const modal = document.getElementById('pos-snack-modal');
+            const grid = document.getElementById('pos-snack-components-grid');
+            const title = document.getElementById('pos-snack-modal-title');
+            const counter = document.getElementById('pos-snack-counter');
+
+            title.textContent = `${product.name} – Pilih ${jumlah_wajib_pilih} Kue`;
+            counter.textContent = `0 / ${jumlah_wajib_pilih} dipilih`;
+
+            grid.innerHTML = produk_id_yang_boleh_dipilih.map(cid => {
+                const comp = window.appData.products.find(p => p.id == cid);
+                if (!comp) return '';
+                const imgUrl = (comp.image && comp.image.startsWith('http')) ? comp.image
+                    : (window.CONFIG?.IMAGEKIT_URL_ENDPOINT || '') + (comp.image || '');
+                return `
+                    <label class="pos-snack-card flex items-center gap-2 p-2 rounded-lg border border-gray-200 cursor-pointer hover:border-amber-400 transition">
+                        <input type="checkbox" value="${cid}" class="pos-snack-cb accent-amber-500 w-4 h-4 shrink-0">
+                        <img src="${imgUrl}" alt="${comp.name}" class="w-12 h-12 object-cover rounded"
+                            onerror="this.src='https://placehold.co/80?text=No+Img'">
+                        <div class="min-w-0">
+                            <p class="text-xs font-semibold text-gray-800 leading-tight line-clamp-2">${comp.name}</p>
+                            <p class="text-[10px] text-emerald-600 font-bold">Rp ${Number(comp.price).toLocaleString('id-ID')}</p>
+                        </div>
+                    </label>`;
+            }).join('');
+
+            // checkbox listener
+            grid.querySelectorAll('.pos-snack-cb').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const checked = grid.querySelectorAll('.pos-snack-cb:checked').length;
+                    counter.textContent = `${checked} / ${jumlah_wajib_pilih} dipilih`;
+                    counter.className = checked === jumlah_wajib_pilih ? 'text-xs font-bold text-emerald-600' : 'text-xs font-bold text-red-500';
+                    // disable unchecked if limit reached
+                    grid.querySelectorAll('.pos-snack-cb:not(:checked)').forEach(c => {
+                        c.disabled = checked >= jumlah_wajib_pilih;
+                    });
+                    document.getElementById('pos-snack-confirm-btn').disabled = checked !== jumlah_wajib_pilih;
+                });
+            });
+
+            document.getElementById('pos-snack-confirm-btn').disabled = true;
+            document.getElementById('pos-snack-confirm-btn').onclick = function () {
+                const selectedIds = Array.from(grid.querySelectorAll('.pos-snack-cb:checked')).map(c => parseInt(c.value));
+                window.closePosSnackModal();
+                window.showPosBoxModal(product, boxes, selectedIds);
+            };
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closePosSnackModal = function () {
+            document.getElementById('pos-snack-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+
+        window.showPosCartItemActions = function (cartKey) {
+            if (window.appData.isReadOnlyMode || window.appData.isPelunasanMode) return;
+            const qty = window.appData.cart[cartKey];
+            if (!qty) return;
+
+            const productId = cartKey.split('_')[0];
+            const product = window.appData.products.find(p => p.id == productId);
+            if (!product) return;
+
+            const modal = document.getElementById('pos-cart-item-modal');
+            const title = document.getElementById('pos-cart-item-title');
+            const nameEl = document.getElementById('pos-cart-item-name');
+            const metaEl = document.getElementById('pos-cart-item-meta');
+
+            title.textContent = 'Kelola Item Keranjang';
+            nameEl.textContent = `${product.name} (Qty: ${qty})`;
+
+            let infoText = '';
+            let info = window.appData.cartInfo ? window.appData.cartInfo[cartKey] : null;
+            const isCustom = cartKey.includes('_');
+
+            if (info) {
+                if (info.boxOptionName) infoText += `Box: ${info.boxOptionName} (+Rp ${Number(info.boxOptionPrice).toLocaleString('id-ID')})\n`;
+                if (info.components && info.components.length > 0) {
+                    const compNames = info.components.map(cid => {
+                        const c = window.appData.products.find(p => p.id == cid);
+                        return c ? c.name : '';
+                    }).filter(Boolean).join(', ');
+                    infoText += `Isi: ${compNames}`;
+                }
+            }
+            metaEl.textContent = infoText || 'Produk Standar (Tanpa Kustomisasi)';
+
+            document.getElementById('pos-cart-item-btn-minus').onclick = function () {
+                let currentQty = window.appData.cart[cartKey];
+                const minOrder = product.minimal_order || 1;
+                if (currentQty <= minOrder) {
+                    delete window.appData.cart[cartKey];
+                    if (window.appData.cartInfo) delete window.appData.cartInfo[cartKey];
+                    window.showNotification('Item dihapus dari keranjang', 'info');
+                    window.closePosCartItemModal();
+                } else {
+                    window.appData.cart[cartKey] = currentQty - 1;
+                    nameEl.textContent = `${product.name} (Qty: ${currentQty - 1})`;
+                }
+                renderViews();
+            };
+
+            document.getElementById('pos-cart-item-btn-plus').onclick = function () {
+                let currentQty = window.appData.cart[cartKey] || 0;
+                window.appData.cart[cartKey] = currentQty + 1;
+                nameEl.textContent = `${product.name} (Qty: ${currentQty + 1})`;
+                renderViews();
+            };
+
+            const editBtn = document.getElementById('pos-cart-item-btn-edit');
+            if (isCustom) {
+                editBtn.classList.remove('hidden');
+                editBtn.onclick = function () {
+                    window.closePosCartItemModal();
+                    const oldQty = window.appData.cart[cartKey];
+                    delete window.appData.cart[cartKey];
+                    if (window.appData.cartInfo) delete window.appData.cartInfo[cartKey];
+                    window.handlePosCustomProduct(productId);
+                };
+            } else {
+                editBtn.classList.add('hidden');
+            }
+
+            document.getElementById('pos-cart-item-btn-delete').onclick = function () {
+                delete window.appData.cart[cartKey];
+                if (window.appData.cartInfo) delete window.appData.cartInfo[cartKey];
+                window.showNotification('Item dihapus dari keranjang', 'info');
+                window.closePosCartItemModal();
+                renderViews();
+            };
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closePosCartItemModal = function () {
+            document.getElementById('pos-cart-item-modal').classList.add('hidden');
+            document.body.style.overflow = '';
         };
 
         function calculateFinances() {
@@ -1161,9 +1488,9 @@
                 }
 
                 itemsTableRows += `
-                    <tr style="vertical-align: top;">
+                    <tr style="vertical-align: top; cursor: pointer;" onclick="window.showPosCartItemActions('${id}')" class="hover:bg-amber-50/60 dark:hover:bg-gray-800/40 relative group" title="Klik untuk edit/hapus item ini">
                         <td style="width: 125px; max-width: 125px; font-size: 11px; font-weight: bold; line-height: 1.3; text-transform: uppercase; padding: 3px 0 0 0; word-break: break-word; white-space: normal;">
-                            ${product.name}
+                            <span style="border-bottom: 1px dashed transparent;" class="group-hover:border-amber-400">${product.name}</span>
                             ${extraDetails}
                             <div style="font-weight: normal; font-size: 11px; margin-top: 2px; color: #000000; letter-spacing: -0.5px;">
                                 ${qty} x ${Number(itemPrice).toLocaleString('id-ID')}
@@ -2067,6 +2394,92 @@
             }
         };
 
+        window.showPosBoxGallery = function (boxId) {
+            const box = window.appData.opsiBoxGlobal.find(b => b.id == boxId);
+            if (!box) return;
+
+            // Kumpulkan gambar_tambahan
+            let additionalImages = [];
+            if (box.gambar_tambahan) {
+                if (Array.isArray(box.gambar_tambahan)) {
+                    additionalImages = box.gambar_tambahan;
+                } else if (typeof box.gambar_tambahan === 'string') {
+                    try {
+                        additionalImages = JSON.parse(box.gambar_tambahan);
+                    } catch (e) {
+                        additionalImages = [];
+                    }
+                }
+            }
+
+            let images = [];
+            const mainImg = box.gambar || '';
+            const allSource = [];
+            if (mainImg) allSource.push(mainImg);
+            additionalImages.forEach(img => {
+                if (img && !allSource.includes(img)) allSource.push(img);
+            });
+
+            if (allSource.length === 0) {
+                allSource.push(window.CONFIG.DEFAULT_IMAGE);
+            }
+
+            images = allSource.map(url => {
+                if (!url) return window.CONFIG.IMAGEKIT_URL_ENDPOINT + window.CONFIG.DEFAULT_IMAGE;
+                if (url.startsWith('http')) return url;
+                return window.CONFIG.IMAGEKIT_URL_ENDPOINT + url;
+            });
+
+            let currentIndex = 0;
+            const modalImage = document.getElementById('modal-image');
+            const modalContent = document.getElementById('pos-image-modal-content');
+
+            // Reset: hapus navigasi lama
+            modalContent.querySelectorAll('.pos-gallery-nav, .pos-gallery-indicator').forEach(el => el.remove());
+
+            modalImage.src = images[0];
+            modalImage.alt = box.nama;
+            document.getElementById('image-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Tambah navigasi jika gambar lebih dari 1
+            if (images.length > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'pos-gallery-nav pos-gallery-prev';
+                prevBtn.innerHTML = '&#10094;';
+                prevBtn.style.cssText = 'position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s;z-index:50;';
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'pos-gallery-nav pos-gallery-next';
+                nextBtn.innerHTML = '&#10095;';
+                nextBtn.style.cssText = 'position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s;z-index:50;';
+
+                const indicator = document.createElement('div');
+                indicator.className = 'pos-gallery-indicator';
+                indicator.style.cssText = 'position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);color:white;font-size:13px;background:rgba(0,0,0,0.5);padding:3px 12px;border-radius:20px;white-space:nowrap';
+                indicator.textContent = `1 / ${images.length}`;
+
+                modalContent.appendChild(prevBtn);
+                modalContent.appendChild(nextBtn);
+                modalContent.appendChild(indicator);
+
+                prevBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    modalImage.src = images[currentIndex];
+                    indicator.textContent = `${currentIndex + 1} / ${images.length}`;
+                });
+
+                nextBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    currentIndex = (currentIndex + 1) % images.length;
+                    modalImage.src = images[currentIndex];
+                    indicator.textContent = `${currentIndex + 1} / ${images.length}`;
+                });
+            }
+        };
+
+
         // Backward-compat: showPosImageModal tetap bisa dipanggil (1 gambar)
         window.showPosImageModal = function (imageUrl, name) {
             document.getElementById('modal-image').src = imageUrl;
@@ -2134,6 +2547,175 @@
             <img id="modal-image" src="" alt="" class="max-h-[90vh] max-w-full object-contain rounded-lg shadow-2xl">
         </div>
     </div>
+
+    <!-- POS BOX SELECTION MODAL -->
+    <div id="pos-box-modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[9990]"
+        onclick="if(event.target===this) window.closePosBoxModal()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-amber-50">
+                <h3 id="pos-box-modal-title" class="font-bold text-sm text-amber-800 line-clamp-1 pr-2">Pilih Box</h3>
+                <button onclick="window.closePosBoxModal()"
+                    class="text-gray-400 hover:text-red-500 text-xl font-bold leading-none">&times;</button>
+            </div>
+
+            <div
+                class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <!-- Center Quantity Selection -->
+                <div class="flex flex-col items-center justify-center mx-auto sm:mx-0">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Jumlah
+                        Pesanan</span>
+                    <div class="flex items-center gap-2">
+                        <button
+                            onclick="(function(){const qi=document.getElementById('pos-box-qty');const m=parseInt(qi.min)||1;if(parseInt(qi.value)>m)qi.value=parseInt(qi.value)-1;})()"
+                            class="w-9 h-9 rounded-xl bg-gray-200 hover:bg-gray-300 active:scale-95 font-bold text-gray-700 flex items-center justify-center text-xl transition-all shadow-xs">−</button>
+                        <input type="number" id="pos-box-qty" min="1" value="1"
+                            class="w-16 text-center text-base font-extrabold border-2 border-gray-300 rounded-xl focus:outline-none focus:border-amber-400 py-1.5 focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        <button
+                            onclick="(function(){const qi=document.getElementById('pos-box-qty');qi.value=parseInt(qi.value)+1;})()"
+                            class="w-9 h-9 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 font-bold text-white flex items-center justify-center text-xl transition-all shadow-xs">+</button>
+                    </div>
+                </div>
+                <!-- Box Search Bar -->
+                <div class="w-full sm:w-auto flex-1 max-w-xs relative mx-auto sm:mx-0">
+                    <span
+                        class="absolute inset-y-0 left-3 flex items-center pl-0.5 pointer-events-none text-gray-400 text-sm">🔍</span>
+                    <input type="text" id="pos-box-search-input" placeholder="Cari nama box..."
+                        class="w-full pl-9 pr-3 py-2.5 border-2 border-gray-200 rounded-xl text-xs focus:outline-none focus:border-amber-400 bg-white text-gray-800 font-semibold shadow-xs">
+                </div>
+            </div>
+
+            <div id="pos-box-options-grid"
+                class="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 overflow-y-auto flex-1 min-h-0 bg-gray-50/50"></div>
+            <div class="px-5 py-3 border-t border-gray-100 bg-gray-50 flex gap-2">
+                <button onclick="window.closePosBoxModal()"
+                    class="px-4 py-2 border-2 border-gray-200 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-105 hover:text-gray-700 transition">Batal</button>
+                <button id="pos-box-confirm-btn"
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm shadow transition">
+                    ✅ Tambah ke Keranjang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POS SNACK BOX COMPONENT MODAL -->
+    <div id="pos-snack-modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[9990]"
+        onclick="if(event.target===this) window.closePosSnackModal()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-amber-50">
+                <h3 id="pos-snack-modal-title" class="font-bold text-sm text-amber-800 line-clamp-1 pr-2">Pilih Komponen
+                </h3>
+                <button onclick="window.closePosSnackModal()"
+                    class="text-gray-400 hover:text-red-500 text-xl font-bold leading-none">&times;</button>
+            </div>
+            <div class="px-4 py-2 bg-gray-50 border-b border-gray-100">
+                <span id="pos-snack-counter" class="text-xs font-bold text-red-500">0 dipilih</span>
+            </div>
+            <div id="pos-snack-components-grid" class="flex flex-col gap-2 p-4 overflow-y-auto flex-1 min-h-0"></div>
+            <div class="px-4 py-3 border-t border-gray-100">
+                <button id="pos-snack-confirm-btn" disabled
+                    class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold py-2.5 rounded-xl text-sm shadow transition">
+                    Lanjut Pilih Box →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POS Cart Item Actions Modal -->
+    <div id="pos-cart-item-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 z-[9995] hidden"
+        onclick="if(event.target===this) window.closePosCartItemModal()">
+        <div
+            class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl max-w-xs w-full p-5 relative shadow-2xl border border-gray-100 dark:border-gray-700 flex flex-col gap-4">
+            <button onclick="window.closePosCartItemModal()"
+                class="absolute top-3 right-3 text-gray-400 hover:text-red-500 dark:hover:text-red-400 text-xl font-bold leading-none">
+                &times;
+            </button>
+            <div class="border-b border-gray-100 dark:border-gray-700 pb-2">
+                <span id="pos-cart-item-title"
+                    class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">Detail
+                    Item</span>
+                <span id="pos-cart-item-name"
+                    class="text-sm font-extrabold text-gray-900 dark:text-white block leading-snug"></span>
+            </div>
+
+            <div class="bg-gray-55 dark:bg-gray-750/30 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                <span
+                    class="text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-wider block mb-1">Kustomisasi</span>
+                <p id="pos-cart-item-meta"
+                    class="text-xs text-gray-600 dark:text-gray-300 leading-normal whitespace-pre-line font-medium"></p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex flex-col gap-2 mt-1">
+                <div
+                    class="flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 text-center">
+                    Ubah Jumlah</div>
+                <div class="flex gap-2">
+                    <button id="pos-cart-item-btn-minus"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-655 text-gray-800 dark:text-gray-150 font-bold py-2 rounded-xl text-xs transition shadow-xs">
+                        ➖ Kurang 1
+                    </button>
+                    <button id="pos-cart-item-btn-plus"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-655 text-gray-800 dark:text-gray-150 font-bold py-2 rounded-xl text-xs transition shadow-xs">
+                        ➕ Tambah 1
+                    </button>
+                </div>
+
+                <button id="pos-cart-item-btn-edit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-1 shadow-xs mt-1">
+                    ✏️ Ganti Box / Isi Kue
+                </button>
+
+                <button id="pos-cart-item-btn-delete"
+                    class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-1 shadow-xs">
+                    🗑️ Hapus dari Keranjang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .pos-box-card {
+            cursor: pointer;
+            border-radius: .75rem;
+            border: 2px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pos-box-card:hover {
+            border-color: #f59e0b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .pos-box-card.selected {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.03);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .pos-snack-card:has(.pos-snack-cb:checked) {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        /* Hide up/down arrows on all number inputs */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+    </style>
+
 </body>
 
 </html>
