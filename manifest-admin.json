@@ -15,7 +15,7 @@
             "purpose": "any maskable"
         }
     ],
-    "start_url": "/gemini.html",
+    "start_url": "/gemini",
     "scope": "/gemini.html",
     "background_color": "#7a5af5",
     "theme_color": "#7a5af5",
