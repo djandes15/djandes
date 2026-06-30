@@ -699,7 +699,7 @@ nav a:hover {
 /* MODAL BOX SELECTION & SNACK BOX - DIPERBAIKI */
 /* ================================================================================= */
 
-/* Box Selection Modal */
+/* Box Selection Modal - MATCH POS LIGHT DESIGN */
 .box-selection-modal {
     display: none;
     position: fixed;
@@ -707,7 +707,7 @@ nav a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
     justify-content: center;
     align-items: center;
@@ -720,42 +720,49 @@ nav a:hover {
 }
 
 .box-selection-content {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
+    background-color: #ffffff;
+    color: #1f2937;
+    border-radius: 16px;
     width: 100%;
-    max-width: 800px;
+    max-width: 672px;
+    /* max-w-2xl */
     max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .box-selection-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid var(--accent-color);
+    padding: 12px 16px;
+    border-bottom: 1px solid #3d2620;
+    background-color: #4E342E;
+    /* catalog add-to-cart color */
     position: sticky;
     top: 0;
-    background: var(--card-bg);
     z-index: 1;
 }
 
 .box-selection-header h3 {
     margin: 0;
-    color: var(--cream-accent);
-    font-size: 1.5rem;
+    color: #ffffff;
+    /* white - as requested */
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 .close-box-selection {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     cursor: pointer;
-    color: var(--accent-color);
+    color: rgba(255, 255, 255, 0.7);
     transition: var(--transition);
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -764,179 +771,337 @@ nav a:hover {
 
 .close-box-selection:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--error-color);
+    color: #fca5a5;
 }
 
-/* Quantity Controls dalam Modal */
-.modal-quantity-controls {
-    padding: 20px;
-    border-bottom: 1px solid var(--accent-color);
-}
-
-.modal-quantity-section {
-    text-align: center;
-}
-
-.modal-quantity-section h4 {
-    margin-bottom: 15px;
-    color: var(--cream-accent);
-    font-size: 1.1rem;
-}
-
-.modal-quantity-section .quantity-controls-centered {
+/* Qty + Search row — sama persis layout POS desktop */
+.box-modal-controls-row {
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #f9fafb;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+@media (min-width: 480px) {
+    .box-modal-controls-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 14px;
+    }
+}
+
+.modal-qty-block {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin: 0 auto;
-    background: var(--light-color);
-    border-radius: 12px;
-    padding: 12px 20px;
-    max-width: 200px;
+    flex-shrink: 0;
 }
 
-.modal-quantity-section .quantity-btn {
-    background: var(--card-bg);
-    border: 1px solid var(--accent-color);
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+.modal-search-block {
+    flex: 1;
+    min-width: 0;
+    padding-top: 4px;
+    border-top: 1px dashed #e5e7eb;
+}
+
+@media (min-width: 480px) {
+    .modal-search-block {
+        padding-top: 0;
+        border-top: none;
+    }
+}
+
+/* qty label */
+.modal-qty-block .qty-label,
+.qty-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* qty controls row */
+.qty-controls {
     display: flex;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    gap: 6px;
+}
+
+.qty-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #6D4C41;
+    border: none;
+    color: #ffffff;
     font-weight: bold;
-    font-size: 1rem;
-    transition: var(--transition);
-    color: var(--white-color);
-}
-
-.modal-quantity-section .quantity-btn:hover {
-    background: var(--secondary-color);
-    color: var(--dark-color);
-    border-color: var(--secondary-color);
-}
-
-.modal-quantity-section .quantity-input {
-    width: 70px;
-    text-align: center;
-    border: 1px solid var(--accent-color);
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    background: var(--white-color);
-    color: var(--black-color);
-}
-
-.min-order-info {
-    margin-top: 8px;
-    color: var(--warning-color);
-    font-size: 0.85rem;
-    font-style: italic;
-}
-
-.modal-separator {
-    padding: 15px 20px;
-    background: var(--light-color);
-}
-
-.modal-separator h4 {
-    margin: 0;
-    color: var(--cream-accent);
     font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    line-height: 1;
 }
 
-/* Box Options Grid */
+#box-qty-plus {
+    background: #D4AF37;
+    color: #1A0E0A;
+}
+
+.qty-btn:hover {
+    opacity: 0.85;
+}
+
+.qty-btn:active {
+    transform: scale(0.95);
+}
+
+.qty-input {
+    width: 56px;
+    height: 34px;
+    border-radius: 10px;
+    border: 2px solid #d1d5db;
+    background: #ffffff;
+    color: #111827;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+
+
+.modal-search-block .search-input-wrapper {
+    width: 100%;
+}
+
+.modal-search-block .search-input-wrapper input {
+    width: 100%;
+    padding: 9px 9px 9px 34px;
+    border-radius: 10px;
+    border: 2px solid #e5e7eb;
+    background: #ffffff;
+    color: #1f2937;
+    font-size: 0.8rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.modal-search-block .search-input-wrapper input:focus {
+    border-color: #D4AF37;
+}
+
+
+
+/* Hide number input spinners globally */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Modal Search Bar in Catalog Selection */
+.modal-search-section {
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    background: #f9fafb;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input-wrapper .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: 10px 10px 10px 36px;
+    border-radius: 12px;
+    border: 2px solid #e5e7eb;
+    background: #ffffff;
+    color: #1f2937;
+    font-size: 0.82rem;
+    font-weight: 600;
+    outline: none;
+    transition: var(--transition);
+}
+
+.search-input-wrapper input:focus {
+    border-color: #fbbf24;
+}
+
+/* Box Options Grid and Cards */
 .box-options-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-    padding: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 50vh;
+    background-color: #ffffff;
+}
+
+@media(min-width: 576px) {
+    .box-options-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .box-option {
-    border: 2px solid var(--accent-color);
-    border-radius: var(--border-radius);
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    transition: var(--transition);
-    background-color: var(--card-bg);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
 }
 
 .box-option:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--secondary-color);
+    transform: translateY(-1px);
+    border-color: #f59e0b;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .box-option.active {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.03);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .box-option-image {
-    height: 150px;
+    aspect-ratio: 4/3;
+    height: auto;
+    border-radius: 8px;
     overflow: hidden;
+    background-color: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .box-option-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: var(--transition);
-}
-
-.box-option:hover .box-option-image img {
-    transform: scale(1.05);
 }
 
 .box-option-info {
-    padding: 15px;
+    padding: 8px 4px 4px 4px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .box-option-info h4 {
-    margin: 0 0 8px 0;
-    color: var(--white-color);
-    font-size: 1rem;
+    margin: 0 0 4px 0;
+    color: #1f2937;
+    font-size: 0.8rem;
+    font-weight: 750;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .box-option-price {
     margin: 0;
-    color: var(--gold-accent);
-    font-weight: 600;
-    font-size: 0.9rem;
+    color: #059669;
+    /* emerald-600 */
+    font-weight: 800;
+    font-size: 0.72rem;
+    background: #ecfdf5;
+    /* emerald-50 */
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid #a7f3d0;
+    /* emerald-200 */
+    display: inline-block;
+    letter-spacing: 0.2px;
 }
 
-/* Tombol Konfirmasi Modal */
-.modal-confirm-btn {
-    margin: 20px;
-    width: calc(100% - 40px);
-    padding: 15px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    background: var(--secondary-color);
-    color: var(--dark-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition);
+.box-selection-footer {
+    padding: 10px 14px;
+    border-top: 1px solid #f3f4f6;
+    background: #f9fafb;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
 }
 
-.modal-confirm-btn:hover:not(:disabled) {
-    background: var(--gold-accent);
-    transform: translateY(-2px);
+/* Tombol Batal — persis seperti POS */
+.box-cancel-btn {
+    padding: 8px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #6b7280;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.modal-confirm-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+.box-cancel-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Tombol Tambah ke Keranjang — warna tombol Tambah Produk di katalog */
+.box-confirm-btn {
+    flex: 1;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: #4E342E;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+.box-confirm-btn:hover {
+    background: #D4AF37;
+    color: #1A0E0A;
+}
+
+.box-confirm-btn:active {
+    transform: scale(0.98);
 }
 
 /* Snack Box Modal */
@@ -1215,7 +1380,7 @@ nav a:hover {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.95);
-    z-index: 1000;
+    z-index: 1100;
     justify-content: center;
     align-items: center;
     backdrop-filter: blur(5px);
@@ -1252,7 +1417,7 @@ nav a:hover {
     cursor: pointer;
     background: none;
     border: none;
-    z-index: 1002;
+    z-index: 1102;
     transition: var(--transition);
 }
 
