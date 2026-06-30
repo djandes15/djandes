@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami - DJANDES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img id="site-logo" src="img/gambar.jpg" alt="">
+                    <h1>Sweet & Savoury</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Beranda</a></li>
+                        <li><a href="about.html" style="color: var(--primary-color);">Tentang Kami</a></li>
+                        <li><a href="contact.html">Kontak</a></li>
+                        <li class="nav-cart">
+                            <a href="#" id="nav-cart-toggle" title="Lihat Keranjang">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="cart-count" id="nav-cart-count">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <h1 id="about-title">Tentang DJANDES</h1>
+            <p id="about-description">Sweet & Savoury - Kue Basah, Hantaran</p>
+        </div>
+    </section>
+
+    <!-- About Content -->
+    <section class="page-content">
+        <div class="container">
+            <div class="about-section">
+                <h2>Selamat Datang di DJANDES</h2>
+                <p id="about-detail"
+                    style="line-height: 1.8; margin-bottom: 20px; font-size: 1.1rem; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    DJANDES adalah home made kue basah lokal yang menyajikan berbagai macam kue tradisional dan modern
+                    dengan cita rasa autentik dan kualitas terbaik.
+                </p>
+
+                <div class="about-grid">
+                    <div class="about-card">
+                        <h3><i class="fas fa-history"></i> Sejarah Kami</h3>
+                        <p id="about-history">Berdiri sejak 2021, DJANDES telah melayani puluhan pelanggan dengan
+                            berbagai produk kue basah yang lezat dan berkualitas.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-eye"></i> Visi</h3>
+                        <p id="about-vision">Menjadi toko kue basah terdepan yang selalu memberikan pengalaman terbaik
+                            bagi pelanggan.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-bullseye"></i> Misi</h3>
+                        <p id="about-mission">Menyediakan kue basah dengan bahan berkualitas, rasa autentik, dan
+                            pelayanan terbaik.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-heart"></i> Komitmen Kami</h3>
+                        <p id="about-commitment">Kami berkomitmen untuk selalu menggunakan bahan-bahan terbaik dan
+                            menjaga cita rasa tradisional dalam setiap produk yang kami sajikan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-section">
+                <h2>Kenapa Memilih DJANDES?</h2>
+                <div class="about-grid">
+                    <div class="about-card">
+                        <h3><i class="fas fa-award"></i> Kualitas Terbaik</h3>
+                        <p id="about-quality">Menggunakan bahan-bahan pilihan dan proses pembuatan yang higienis untuk
+                            menjamin kualitas terbaik.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-clock"></i> Segar Setiap Hari</h3>
+                        <p id="about-fresh">Semua kue dibuat fresh setiap hari sehingga Anda selalu mendapatkan produk
+                            yang segar dan enak.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-users"></i> Pelayanan Ramah</h3>
+                        <p id="about-service">Kami siap melayani dengan ramah dan profesional untuk memastikan
+                            pengalaman berbelanja yang menyenangkan.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-shipping-fast"></i> Pengiriman Cepat</h3>
+                        <p id="about-delivery">Melayani pengantaran pesanan dengan jasa kurir, cepat dan tepat waktu ke
+                            seluruh area di Blitar (syarat & ketentuan berlaku).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float -->
+    <a class="whatsapp-float" id="whatsapp-float" href="#" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 DJANDES - Sweet & Savoury</p>
+                <div class="social-icons" id="footer-social-icons">
+                    <!-- Social icons will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

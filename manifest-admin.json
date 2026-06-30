@@ -1,0 +1,24 @@
+{
+    "short_name": "Djandes Admin",
+    "name": "DJANDES Admin Panel",
+    "icons": [
+        {
+            "src": "/img/gambar.jpg",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/img/gambar.jpg",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        }
+    ],
+    "start_url": "/gemini.html",
+    "scope": "/gemini.html",
+    "background_color": "#7a5af5",
+    "theme_color": "#7a5af5",
+    "display": "standalone",
+    "orientation": "portrait"
+}

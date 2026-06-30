@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJANDES - Sweet & Savoury - Katalog dan harga</title>
+    <link rel="manifest" href="manifest-catalog.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description"
+        content="home made kue basah lokal yang menyajikan berbagai macam kue tradisional dan modern dengan cita rasa autentik dan kualitas terbaik.">
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="apple-touch-icon" href="/img/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DJANDES - Sweet & Savoury">
+    <meta property="og:title" content="DJANDES - Sweet & Savoury">
+    <meta property="og:description"
+        content="Berbagai macam kue tradisional dan modern dengan cita rasa autentik dan kualitas terbaik.">
+    <meta property="og:image" content="https://djandes.vercel.app/img/djandes.png" />
+    <meta property="og:url" content="https://djandes.vercel.app">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DJANDES - Sweet & Savoury">
+    <meta name="twitter:description"
+        content="home made kue basah lokal yang menyajikan berbagai macam kue tradisional dan modern dengan cita rasa autentik dan kualitas terbaik.">
+    <meta name="twitter:image" content="https://djandes.vercel.app/img/djandes.png">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img id="site-logo" src="img/gambar.jpg" alt="">
+                    <h1>Sweet & Savoury</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html" style="color: var(--primary-color);">Beranda</a></li>
+                        <li><a href="about.html">Tentang Kami</a></li>
+                        <li><a href="contact.html">Kontak</a></li>
+                        <li class="nav-cart">
+                            <a href="#" id="nav-cart-toggle">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="cart-count" id="nav-cart-count">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h2 id="site-title">DJANDES</h2>
+            <p id="site-description">Jl. Anggrek , RT 004 / RW 013, Tegalrejo, Sawentar, Kanigoro, Blitar.</p>
+            <div class="social-icons" id="social-icons">
+                <!-- Social icons will be dynamically added here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter & Search Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-content">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Cari kue...">
+                </div>
+                <div class="category-filter" id="category-filter">
+                    <!-- Categories will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section" id="products">
+        <div class="container">
+            <!-- Products Count -->
+            <div class="products-count" id="products-count">
+                Memuat produk...
+            </div>
+
+            <!-- Grid Layout Controls -->
+            <div class="layout-controls" id="layout-controls">
+                <span style="margin-right: 8px; color: #666; font-size: 0.9rem;">Tampilan:</span>
+                <button class="layout-btn active" id="grid-2-btn" title="2 Kolom">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="layout-btn" id="grid-3-btn" title="3 Kolom">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button class="layout-btn" id="grid-4-btn" title="4 Kolom">
+                    <i class="fas fa-th-list"></i>
+                </button>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid" id="products-grid">
+                <!-- Products will be dynamically added here -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <!-- Pagination buttons will be dynamically added here -->
+            </div>
+            <div class="pagination-info" id="pagination-info"></div>
+        </div>
+    </section>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="image-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <img class="modal-image" id="modal-image" src="" alt="">
+        </div>
+    </div>
+
+    <!-- NEW: Description Modal -->
+    <div class="description-modal" id="description-modal">
+        <div class="description-modal-content">
+            <button class="close-description-modal" id="close-description-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 id="description-modal-title"></h3>
+            <p id="description-modal-text"></p>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="checkout-modal" id="checkout-modal">
+        <div class="checkout-form" id="checkout-form">
+            <div class="checkout-header">
+                <h3>Checkout Pesanan</h3>
+                <button class="close-checkout" id="close-checkout">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label for="customer-name">Nama Pemesan *</label>
+                <input type="text" id="customer-name" class="form-control" placeholder="Masukkan nama lengkap" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pickup-date">Tanggal Pengambilan *</label>
+                    <input type="date" id="pickup-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="pickup-time">Jam Pengambilan *</label>
+                    <input type="time" id="pickup-time" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="customer-note">Catatan Tambahan (Opsional)</label>
+                <textarea id="customer-note" class="form-control"
+                    placeholder="Masukkan catatan atau instruksi khusus (opsional)" rows="2"
+                    style="font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Detail Pesanan:</label>
+                <div id="checkout-items"
+                    style="background: var(--light-color); padding: 16px; border-radius: 8px; margin-top: 8px; font-size: 0.9rem;">
+                    <!-- Order items will be dynamically added here -->
+                </div>
+            </div>
+
+            <button class="checkout-btn" id="confirm-checkout">
+                <i class="fab fa-whatsapp"></i> Kirim ke WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="cart-summary" id="cart-summary">
+        <div class="cart-header">
+            <h3>Keranjang Belanja</h3>
+            <button class="close-cart" id="close-cart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        <div class="cart-total" id="cart-total">
+            Total: Rp 0
+        </div>
+        <button class="checkout-btn" id="checkout-btn">Checkout Pesanan</button>
+    </div>
+
+    <!-- WhatsApp Float -->
+    <a class="whatsapp-float" id="whatsapp-float" href="#" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 DJANDES - Sweet & Savoury</p>
+                <div class="social-icons">
+                    <!-- Social icons will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================================================= -->
+    <!-- MODAL BARU: BOX SELECTION -->
+    <!-- ================================================================================= -->
+    <div class="box-selection-modal" id="box-selection-modal">
+        <div class="box-selection-content">
+            <div class="box-selection-header">
+                <h3>Menu Box</h3>
+                <button class="close-box-selection" id="close-box-selection">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="box-options-container" id="box-options-container">
+                <!-- Box options will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================================= -->
+    <!-- MODAL BARU: SNACK BOX COMPOSITION -->
+    <!-- ================================================================================= -->
+    <div class="snack-box-modal" id="snack-box-modal">
+        <div class="snack-box-content">
+            <div class="snack-box-header">
+                <h3 id="snack-box-title">Pilih Komponen</h3>
+                <button class="close-snack-box" id="close-snack-box">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="snack-box-description" id="snack-box-description">
+                <!-- Description will be dynamically added here -->
+            </div>
+            <div class="snack-box-components" id="snack-box-components">
+                <!-- Components will be dynamically added here -->
+            </div>
+            <div class="snack-box-footer">
+                <div class="snack-box-selected-count" id="snack-box-selected-count">0 item dipilih</div>
+                <button class="btn btn-primary" id="snack-box-confirm-btn" disabled>Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

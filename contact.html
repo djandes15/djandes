@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontak - DJANDES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img id="site-logo" src="img/gambar.jpg" alt="">
+                    <h1>Sweet & Savoury</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Beranda</a></li>
+                        <li><a href="about.html">Tentang Kami</a></li>
+                        <li><a href="contact.html" style="color: var(--primary-color);">Kontak</a></li>
+                        <li class="nav-cart">
+                            <a href="#" id="nav-cart-toggle" title="Lihat Keranjang">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="cart-count" id="nav-cart-count">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <h1>Hubungi Kami</h1>
+            <p>Kami siap melayani kebutuhan Anda</p>
+        </div>
+    </section>
+
+    <!-- Contact Content -->
+    <section class="page-content">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Informasi Kontak</h2>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Telepon</h3>
+                            <p id="contact-phone">+62 858-1200-6225</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>WhatsApp</h3>
+                            <p id="contact-whatsapp">+62 858-1200-6225</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <p id="contact-email"></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Alamat</h3>
+                            <p id="contact-address">Jl. Anggrek , RT 004 / RW 013, Tegalrejo, Sawentar, Kanigoro,Blitar.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Jam Operasional</h3>
+                            <p id="contact-hours">Senin - Minggu: 08:00 - 18:00 WIB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h2>Lokasi Kami</h2>
+                    <div class="map-container">
+                        <iframe id="contact-map"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3949.8109453560633!2d112.2325264!3d-8.1207225!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78ebac417b43f7%3A0x806e165d29a57022!2sDjandes%20Sweet%20and%20Savoury!5e0!3m2!1sid!2sid!4v1717587123456!5m2!1sid!2sid"
+                            width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy">
+                        </iframe>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <h3>Sosial Media</h3>
+                        <div class="social-icons" id="social-icons"
+                            style="justify-content: flex-start; margin-top: 15px;">
+                            <!-- Social icons will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-section" style="margin-top: 40px;">
+                <h2>Cara Memesan</h2>
+                <div class="about-grid">
+                    <div class="about-card">
+                        <h3><i class="fas fa-shopping-cart"></i> 1. Pilih Produk</h3>
+                        <p>Browse katalog kami dan pilih kue yang Anda inginkan</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-cart-plus"></i> 2. Tambah ke Keranjang</h3>
+                        <p>Masukkan produk pilihan ke keranjang belanja</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fas fa-check-circle"></i> 3. Checkout</h3>
+                        <p>Isi data pemesan dan pilih waktu pengambilan</p>
+                    </div>
+
+                    <div class="about-card">
+                        <h3><i class="fab fa-whatsapp"></i> 4. Konfirmasi via WhatsApp</h3>
+                        <p>Pesanan akan dikirim ke WhatsApp untuk konfirmasi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float -->
+    <a class="whatsapp-float" id="whatsapp-float" href="" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 DJANDES - Sweet & Savoury</p>
+                <div class="social-icons" id="footer-social-icons">
+                    <!-- Social icons will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
