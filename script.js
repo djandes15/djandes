@@ -2003,7 +2003,6 @@ function sendWhatsAppOrder(customerName, pickupDate, pickupTime, refId, customer
     let message = `Halo, saya ingin memesan kue dari ${appData.siteSettings.title}:\n\n`;
     if (refId) {
         message += `📋 *Nomor Referensi Pesanan: ${refId}*\n`;
-        message += `_(Sampaikan nomor ini kepada kasir saat pengambilan)_\n\n`;
     }
     message += `*Data Pemesan:*\n`;
     message += `Nama: ${customerName}\n`;
