@@ -1059,8 +1059,15 @@
             Object.keys(window.appData.cart).forEach(id => {
                 const qty = window.appData.cart[id];
                 totalQty += qty;
-                const product = window.appData.products.find(p => p.id == id);
-                if (product) total += product.price * qty;
+                const productId = id.split('_')[0];
+                const product = window.appData.products.find(p => p.id == productId);
+                if (product) {
+                    let boxOptionPrice = 0;
+                    if (window.appData.cartInfo && window.appData.cartInfo[id]) {
+                        boxOptionPrice = window.appData.cartInfo[id].boxOptionPrice || 0;
+                    }
+                    total += (product.price + boxOptionPrice) * qty;
+                }
             });
 
             const badge = document.getElementById('cart-badge');
@@ -1123,17 +1130,43 @@
             let itemsTableRows = '';
             Object.keys(window.appData.cart).forEach(id => {
                 const qty = window.appData.cart[id];
-                const product = window.appData.products.find(p => p.id == id);
+                const productId = id.split('_')[0];
+                const product = window.appData.products.find(p => p.id == productId);
                 if (!product) return;
 
-                const itemTotal = product.price * qty;
+                let boxOptionPrice = 0;
+                let boxOptionName = '';
+                let components = [];
+                if (window.appData.cartInfo && window.appData.cartInfo[id]) {
+                    boxOptionPrice = window.appData.cartInfo[id].boxOptionPrice || 0;
+                    boxOptionName = window.appData.cartInfo[id].boxOptionName || '';
+                    components = window.appData.cartInfo[id].components || [];
+                }
+
+                const itemPrice = product.price + boxOptionPrice;
+                const itemTotal = itemPrice * qty;
+
+                let extraDetails = '';
+                if (boxOptionName) {
+                    extraDetails += `<div style="font-weight: normal; font-size: 9px; color: #555555; margin-top: 1px; text-transform: none;">Box: ${boxOptionName} (+${Number(boxOptionPrice).toLocaleString('id-ID')})</div>`;
+                }
+                if (components && components.length > 0) {
+                    const compNames = components.map(cid => {
+                        const compObj = window.appData.products.find(p => p.id == cid);
+                        return compObj ? compObj.name : '';
+                    }).filter(Boolean).join(', ');
+                    if (compNames) {
+                        extraDetails += `<div style="font-weight: normal; font-size: 9px; color: #555555; margin-top: 1px; text-transform: none;">Isi: ${compNames}</div>`;
+                    }
+                }
 
                 itemsTableRows += `
                     <tr style="vertical-align: top;">
                         <td style="width: 125px; max-width: 125px; font-size: 11px; font-weight: bold; line-height: 1.3; text-transform: uppercase; padding: 3px 0 0 0; word-break: break-word; white-space: normal;">
                             ${product.name}
+                            ${extraDetails}
                             <div style="font-weight: normal; font-size: 11px; margin-top: 2px; color: #000000; letter-spacing: -0.5px;">
-                                ${qty} x ${Number(product.price).toLocaleString('id-ID')}
+                                ${qty} x ${Number(itemPrice).toLocaleString('id-ID')}
                             </div>
                         </td>
                         <td style="width: 65px; max-width: 65px; font-size: 11px; font-weight: bold; line-height: 1.3; text-align: right; padding: 3px 0 0 0; white-space: nowrap;">
@@ -1313,9 +1346,20 @@
             const currentMethodInput = document.getElementById('payment-status')?.value || 'Lunas';
 
             let totalBilling = 0;
+            const flatItems = {};
             Object.keys(cartData).forEach(id => {
-                const product = window.appData.products.find(p => p.id == id);
-                if (product) totalBilling += product.price * cartData[id];
+                const qty = cartData[id];
+                if (qty <= 0) return;
+                const productId = id.split('_')[0];
+                const product = window.appData.products.find(p => p.id == productId);
+                if (product) {
+                    let boxOptionPrice = 0;
+                    if (window.appData.cartInfo && window.appData.cartInfo[id]) {
+                        boxOptionPrice = window.appData.cartInfo[id].boxOptionPrice || 0;
+                    }
+                    totalBilling += (product.price + boxOptionPrice) * qty;
+                }
+                flatItems[productId] = (flatItems[productId] || 0) + qty;
             });
 
             let currentLeft = totalBilling - window.appData.previousDpAmount;
@@ -1344,7 +1388,11 @@
                 amount_paid: amountPaid,
                 debt: debt,
                 change: change,
-                items: cartData,
+                items: flatItems,
+                cart_info: {
+                    cart: cartData,
+                    cartInfo: window.appData.cartInfo || {}
+                },
                 source: isOnline ? 'online' : 'pos',
                 updated_at: new Date().toISOString()
             };
@@ -1685,7 +1733,13 @@
         window.activatePelunasanMode = function (trx) {
             window.appData.activeTransaction = trx;
             window.appData.activeNotaId = trx.invoice_code;
-            window.appData.cart = trx.items || {};
+            if (trx.cart_info && trx.cart_info.cart) {
+                window.appData.cart = trx.cart_info.cart;
+                window.appData.cartInfo = trx.cart_info.cartInfo || {};
+            } else {
+                window.appData.cart = trx.items || {};
+                window.appData.cartInfo = {};
+            }
 
             // ── DETEKSI PESANAN ONLINE (source: 'online' atau prefix ONL-)
             const isOnlineOrder = trx.source === 'online' || String(trx.invoice_code).startsWith('ONL-');
