@@ -41,11 +41,11 @@
 
         if (_connected) {
             statusDot.className = 'indicator-dot dot-connected mr-1';
-            statusText.textContent = 'Printer: Terhubung ✓';
+            statusText.textContent = '🖨️: Terhubung ✓';
             connectBtn.textContent = 'Putuskan';
         } else {
             statusDot.className = 'indicator-dot dot-disconnected mr-1';
-            statusText.textContent = isBluetoothAvailable() ? '🖨️ : Terputus ' : 'Bluetooth tidak tersedia (HTTPS)';
+            statusText.textContent = isBluetoothAvailable() ? '🖨️: Terputus' : 'Bluetooth tidak tersedia (HTTPS)';
             connectBtn.textContent = 'Hubungkan 🖨️';
         }
     }
@@ -180,13 +180,16 @@
             const qty = cartData[key];
             if (!qty || qty <= 0) return;
 
-            let product, boxOptionPrice = 0;
+            let product, boxOptionPrice = 0, boxOptionName = '', components = [];
             if (cartInfoData && cartInfoData[key]) {
                 const info = cartInfoData[key];
                 product = products.find(p => p.id === info.productId);
                 boxOptionPrice = info.boxOptionPrice || 0;
+                boxOptionName = info.boxOptionName || '';
+                components = info.components || [];
             } else {
-                product = products.find(p => p.id == key);
+                const productId = key.split('_')[0];
+                product = products.find(p => p.id == productId);
             }
             if (!product) return;
 
@@ -195,6 +198,20 @@
             totalPrice += itemTotal;
 
             line(product.name.toUpperCase().substring(0, 32));
+            if (boxOptionName) {
+                line(`  BOX: ${boxOptionName.toUpperCase()}`);
+            }
+            if (components && components.length > 0) {
+                const compNames = components.map(cid => {
+                    const compObj = products.find(p => p.id == cid);
+                    return compObj ? compObj.name : '';
+                }).filter(Boolean).join(', ');
+                if (compNames) {
+                    const wrapComp = wordWrap(`  ISI: ${compNames}`, 32);
+                    wrapComp.forEach(cLine => line(cLine.toUpperCase()));
+                }
+            }
+
             const qtyStr = `  ${qty} x ${rupiah(unitPrice)}`;
             const totalStr = rupiah(itemTotal);
             const spacer = 32 - qtyStr.length - totalStr.length;
@@ -344,13 +361,16 @@
             const qty = cartData[key];
             if (!qty || qty <= 0) return;
 
-            let product, boxOptionPrice = 0;
+            let product, boxOptionPrice = 0, boxOptionName = '', components = [];
             if (cartInfoData && cartInfoData[key]) {
                 const info = cartInfoData[key];
                 product = products.find(p => p.id === info.productId);
                 boxOptionPrice = info.boxOptionPrice || 0;
+                boxOptionName = info.boxOptionName || '';
+                components = info.components || [];
             } else {
-                product = products.find(p => p.id == key);
+                const productId = key.split('_')[0];
+                product = products.find(p => p.id == productId);
             }
             if (!product) return;
 
@@ -358,8 +378,23 @@
             const itemTotal = unitPrice * qty;
             totalPrice += itemTotal;
 
+            let extraHtml = '';
+            if (boxOptionName) {
+                extraHtml += `<tr><td colspan="2" style="font-size:9px; color:#555; padding-left:8px; text-transform:none;">BOX: ${boxOptionName.toUpperCase()}</td></tr>`;
+            }
+            if (components && components.length > 0) {
+                const compNames = components.map(cid => {
+                    const compObj = products.find(p => p.id == cid);
+                    return compObj ? compObj.name : '';
+                }).filter(Boolean).join(', ');
+                if (compNames) {
+                    extraHtml += `<tr><td colspan="2" style="font-size:9px; color:#555; padding-left:8px; line-height:1.2; text-transform:none;">ISI: ${compNames.toUpperCase()}</td></tr>`;
+                }
+            }
+
             itemsHtml += `
                 <tr><td colspan="2"><b>${product.name.toUpperCase()}</b></td></tr>
+                ${extraHtml}
                 <tr>
                     <td>  ${qty} x ${rupiah(unitPrice)}</td>
                     <td style="text-align:right">${rupiah(itemTotal)}</td>
