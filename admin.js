@@ -300,7 +300,16 @@ function getOptimizedImageKitUrl(originalUrl, options = {}) {
         return `${baseUrl}?tr=${params}`;
     }
 
-    // Untuk URL Supabase: kembalikan URL bersih (tanpa query params lama)
+    // Redirect URL Supabase ke Cloudflare Worker Proxy jika dikonfigurasi
+    if (CONFIG.IMAGE_PROXY_URL && originalUrl.includes('supabase.co')) {
+        const cleanUrl = originalUrl.split('?')[0];
+        const supabaseBase = `${CONFIG.SUPABASE_URL}/storage/v1/object/public/product-images`;
+        if (cleanUrl.startsWith(supabaseBase)) {
+            return cleanUrl.replace(supabaseBase, CONFIG.IMAGE_PROXY_URL);
+        }
+    }
+
+    // Untuk URL lainnya: kembalikan URL bersih (tanpa query params lama)
     return originalUrl.split('?')[0];
 }
 
@@ -1777,6 +1786,7 @@ function deleteProduct(index, product) {
 
             appData.products.splice(index, 1);
             renderProductsList();
+            invalidateClientCache();
             showMessage('Produk berhasil dihapus dari Supabase!', 'success');
             modal.remove();
         } catch (err) {
@@ -2089,6 +2099,7 @@ async function addProduct() {
         appData.products.unshift(newProduct);
         resetProductForm();
         renderProductsList();
+        invalidateClientCache();
         showMessage('Produk berhasil ditambahkan ke Supabase!', 'success');
     } catch (err) {
         showMessage('Gagal simpan ke Supabase: ' + err.message, 'error');
@@ -2246,6 +2257,7 @@ async function updateProduct() {
 
         resetProductForm();
         renderProductsList();
+        invalidateClientCache();
         showMessage('Produk berhasil diupdate di Supabase!', 'success');
     } catch (err) {
         showMessage('Gagal update: ' + err.message, 'error');
@@ -2348,6 +2360,7 @@ async function saveToSupabase() {
             }
         }
 
+        invalidateClientCache();
         return true;
     } catch (error) {
         console.error('Failed to save to Supabase:', error);
@@ -2371,6 +2384,13 @@ function showMessage(text, type) {
     setTimeout(() => {
         message.style.display = 'none';
     }, 5000);
+}
+
+// Invalidate Supabase local client caching
+function invalidateClientCache() {
+    localStorage.removeItem('djandes_supabase_cache');
+    localStorage.removeItem('djandes_supabase_cache_time');
+    console.log('✓ Cache lokal browser berhasil dihapus (Busted) karena ada perubahan data dari admin.');
 }
 // ==========================================
 // LAPORAN PENJUALAN — ADMIN PANEL
