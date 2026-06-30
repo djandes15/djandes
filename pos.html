@@ -2355,16 +2355,9 @@
             // Kumpulkan semua gambar produk (images[] atau fallback ke image)
             let images = [];
             if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-                images = product.images.map(url => {
-                    if (!url) return window.CONFIG.IMAGEKIT_URL_ENDPOINT + window.CONFIG.DEFAULT_IMAGE;
-                    if (url.startsWith('http')) return url;
-                    return window.CONFIG.IMAGEKIT_URL_ENDPOINT + url;
-                });
+                images = product.images.map(url => getProxiedImageUrl(url));
             } else {
-                let single = product.image || '';
-                if (single && !single.startsWith('http')) single = window.CONFIG.IMAGEKIT_URL_ENDPOINT + single;
-                if (!single) single = window.CONFIG.IMAGEKIT_URL_ENDPOINT + window.CONFIG.DEFAULT_IMAGE;
-                images = [single];
+                images = [getProxiedImageUrl(product.image || '')];
             }
 
             let currentIndex = 0;
@@ -2446,11 +2439,7 @@
                 allSource.push(window.CONFIG.DEFAULT_IMAGE);
             }
 
-            images = allSource.map(url => {
-                if (!url) return window.CONFIG.IMAGEKIT_URL_ENDPOINT + window.CONFIG.DEFAULT_IMAGE;
-                if (url.startsWith('http')) return url;
-                return window.CONFIG.IMAGEKIT_URL_ENDPOINT + url;
-            });
+            images = allSource.map(url => getProxiedImageUrl(url));
 
             let currentIndex = 0;
             const modalImage = document.getElementById('modal-image');
@@ -2504,7 +2493,7 @@
 
         // Backward-compat: showPosImageModal tetap bisa dipanggil (1 gambar)
         window.showPosImageModal = function (imageUrl, name) {
-            document.getElementById('modal-image').src = imageUrl;
+            document.getElementById('modal-image').src = getProxiedImageUrl(imageUrl);
             document.getElementById('modal-image').alt = name;
             document.getElementById('pos-image-modal-content').querySelectorAll('.pos-gallery-nav, .pos-gallery-indicator').forEach(el => el.remove());
             document.getElementById('image-modal').classList.remove('hidden');
