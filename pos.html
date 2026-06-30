@@ -314,7 +314,7 @@
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-20 sm:pb-12">
 
     <header
-        class="bg-amber-600 text-white shadow-md sticky top-0 z-50 px-3 py-2.5 flex justify-between items-center gap-2">
+        class="bg-blue-600 text-white shadow-md sticky top-0 z-50 px-3 py-2.5 flex justify-between items-center gap-2">
         <!-- Kiri: Judul + Status Internet -->
         <div class="flex items-center gap-2 min-w-0">
             <h1 class="text-base sm:text-xl font-bold tracking-wide whitespace-nowrap">
@@ -340,22 +340,29 @@
 
             <!-- Toggle Dark Mode -->
             <button id="darkmode-toggle-btn" onclick="toggleDarkMode()"
-                class="bg-amber-800 hover:bg-amber-900 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap"
+                class="bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap"
                 title="Ganti Mode Gelap/Terang">
-                🌙
+                🌒  
             </button>
 
             <!-- Admin POS -->
             <button id="admin-pos-btn" onclick="handleAdminPosAuth()"
-                class="bg-amber-800 hover:bg-amber-900 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap">
+                class="bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap">
                 🔒 <span class="hidden sm:inline">Admin</span>
             </button>
 
             <!-- Ke Halaman Admin -->
             <a href="gemini.html" target="_blank"
-                class="bg-amber-800 hover:bg-amber-900 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap inline-flex items-center gap-1"
+                class="bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap inline-flex items-center gap-1"
                 title="Buka Panel Admin">
                 ⚙️ <span class="hidden sm:inline">Panel</span>
+            </button>
+
+            <!-- Ke Halaman Web -->
+            <a href="index.html" target="_blank"
+                class="bg-yellow-600 hover:bg-yellow-700 text-black text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap inline-flex items-center gap-1"
+                title="Buka Website">
+                🏚️   <span class="hidden sm:inline">Web</span>
             </a>
         </div>
     </header>
