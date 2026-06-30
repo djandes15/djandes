@@ -761,6 +761,37 @@
                                                     <i class="fas fa-upload"></i> Upload
                                                 </button>
                                             </div>
+                                            <!-- Pengaturan tambahan upload & kompresi produk -->
+                                            <div
+                                                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 8px; margin-bottom: 8px;">
+                                                <div
+                                                    style="font-weight: 600; font-size: 12px; color: #475569; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;">
+                                                    <i class="fas fa-sliders-h"></i> Pengaturan Upload &amp; Kompresi
+                                                </div>
+                                                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                                    <div style="flex: 1; min-width: 150px;">
+                                                        <label for="product-upload-prefix"
+                                                            style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px; display: block;">Prefix
+                                                            Nama File</label>
+                                                        <input type="text" id="product-upload-prefix"
+                                                            class="form-control"
+                                                            style="font-size: 12px; height: 32px; padding: 4px 8px; min-height: auto;"
+                                                            placeholder="Kosongkan untuk otomatis">
+                                                    </div>
+                                                    <div style="flex: 1; min-width: 150px;">
+                                                        <label for="product-compress-quality"
+                                                            style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px; display: flex; justify-content: space-between;">
+                                                            <span>Kualitas WebP</span>
+                                                            <span id="product-compress-val"
+                                                                style="font-weight: 700; color: #3b82f6;">82%</span>
+                                                        </label>
+                                                        <input type="range" id="product-compress-quality" min="10"
+                                                            max="100" value="82" class="form-control"
+                                                            style="height: 24px; padding: 0; min-height: auto;"
+                                                            oninput="document.getElementById('product-compress-val').textContent = this.value + '%'">
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <button type="button" id="open-library-btn" class="btn btn-secondary"
                                                 style="width: 100%; margin-top: 5px; background-color: #7f8c8d;">
                                                 <i class="fas fa-images"></i> Buka Galeri Media Supabase
@@ -823,46 +854,128 @@
                     <!-- TAB BARU: OPSI BOX -->
                     <!-- ================================================================================= -->
                     <div class="tab-content" id="box-options-tab">
-                        <div class="admin-section">
-                            <h2><i class="fas fa-archive"></i> Kelola Opsi Box</h2>
-                            <div class="form-group">
-                                <label for="admin-box-option-name">Nama Opsi Box</label>
-                                <input type="text" id="admin-box-option-name" class="form-control"
-                                    placeholder="Contoh: Box Mewah">
-                            </div>
-                            <div class="form-group">
-                                <label for="admin-box-option-image">Gambar Box</label>
-                                <div style="display: flex; gap: 10px; margin-bottom: 5px;">
-                                    <input type="file" id="box-upload" accept="image/*" class="form-control"
-                                        style="flex: 1;">
-                                    <button type="button" id="box-upload-btn" class="btn btn-primary"
-                                        style="background-color: #3498db; width: auto; min-width: 50px;">
-                                        <i class="fas fa-upload"></i>
+
+                        <!-- Modal Form Kelola Opsi Box -->
+                        <div id="box-form-modal" class="modal-overlay">
+                            <div class="modal-content" style="max-width: 700px; width: 95%;">
+                                <div class="modal-header">
+                                    <h2 id="box-modal-title"><i class="fas fa-archive"></i> Kelola Opsi Box</h2>
+                                    <button class="close-modal" id="close-box-modal"
+                                        style="background: #f1f5f9; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.3s;"
+                                        onclick="window.closeBoxModal()">&times;</button>
+                                </div>
+                                <div class="modal-body" style="padding: 24px 32px; max-height: 70vh; overflow-y: auto;">
+                                    <div class="form-group">
+                                        <label for="admin-box-option-name">Nama Opsi Box</label>
+                                        <input type="text" id="admin-box-option-name" class="form-control"
+                                            placeholder="Contoh: Box Mewah">
+                                    </div>
+
+                                    <!-- Gambar Utama Box -->
+                                    <div class="form-group">
+                                        <label>Upload Gambar dari Perangkat</label>
+                                        <div style="display: flex; gap: 10px; margin-bottom: 5px;">
+                                            <input type="file" id="box-upload" accept="image/*" multiple
+                                                class="form-control" style="flex: 1;">
+                                            <button type="button" id="box-upload-btn" class="btn btn-primary"
+                                                style="background-color: #3498db; width: auto; min-width: 80px;">
+                                                <i class="fas fa-upload"></i> Upload
+                                            </button>
+                                        </div>
+                                        <!-- Pengaturan tambahan upload & kompresi opsi box -->
+                                        <div
+                                            style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 8px; margin-bottom: 8px;">
+                                            <div
+                                                style="font-weight: 600; font-size: 12px; color: #475569; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;">
+                                                <i class="fas fa-sliders-h"></i> Pengaturan Upload &amp; Kompresi
+                                            </div>
+                                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                                <div style="flex: 1; min-width: 150px;">
+                                                    <label for="box-upload-prefix"
+                                                        style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px; display: block;">Prefix
+                                                        Nama File</label>
+                                                    <input type="text" id="box-upload-prefix" class="form-control"
+                                                        style="font-size: 12px; height: 32px; padding: 4px 8px; min-height: auto;"
+                                                        placeholder="Kosongkan untuk otomatis">
+                                                </div>
+                                                <div style="flex: 1; min-width: 150px;">
+                                                    <label for="box-compress-quality"
+                                                        style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px; display: flex; justify-content: space-between;">
+                                                        <span>Kualitas WebP</span>
+                                                        <span id="box-compress-val"
+                                                            style="font-weight: 700; color: #3b82f6;">82%</span>
+                                                    </label>
+                                                    <input type="range" id="box-compress-quality" min="10" max="100"
+                                                        value="82" class="form-control"
+                                                        style="height: 24px; padding: 0; min-height: auto;"
+                                                        oninput="document.getElementById('box-compress-val').textContent = this.value + '%'">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" id="open-box-library-btn" class="btn btn-secondary"
+                                            style="width: 100%; margin-bottom: 10px; background-color: #7f8c8d;">
+                                            <i class="fas fa-images"></i> Pilih dari Galeri Supabase
+                                        </button>
+                                        <small class="form-text text-muted">Upload beberapa file sekaligus atau pilih
+                                            dari galeri. Gambar pertama menjadi gambar utama.</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="admin-box-option-images">URL Gambar (pisahkan dengan koma untuk
+                                            multi-gambar)</label>
+                                        <textarea id="admin-box-option-images" class="form-control" rows="3"
+                                            placeholder="https://link-gambar1.jpg, https://link-gambar2.jpg"></textarea>
+                                        <!-- Input tersembunyi untuk backward compat -->
+                                        <input type="hidden" id="admin-box-option-image">
+                                        <div id="box-image-previews"
+                                            style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                                            <!-- Preview gambar akan muncul di sini -->
+                                        </div>
+                                        <small class="form-text text-muted">Gambar pertama sebagai tampilan utama,
+                                            gambar lainnya sebagai galeri.</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="admin-box-option-price">Harga Tambahan</label>
+                                        <input type="number" id="admin-box-option-price" class="form-control"
+                                            placeholder="Harga tambahan per unit (isi 0 jika gratis)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Kategori Berlaku</label>
+                                        <div id="admin-box-option-categories" class="checkbox-container">
+                                            <!-- Checkbox kategori akan ditambahkan secara dinamis -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer"
+                                    style="padding: 16px 32px; background: #f8fafc; display: flex; gap: 12px; justify-content: flex-end;">
+                                    <button class="btn btn-secondary" onclick="window.closeBoxModal()"
+                                        style="background: #64748b;">
+                                        <i class="fas fa-times"></i> Batal
+                                    </button>
+                                    <button class="btn btn-success" id="add-box-option">
+                                        <i class="fas fa-plus"></i> Tambah Opsi Box
+                                    </button>
+                                    <button class="btn btn-warning" id="update-box-option" style="display:none;">
+                                        <i class="fas fa-edit"></i> Update Opsi Box
                                     </button>
                                 </div>
-                                <button type="button" id="open-box-library-btn" class="btn btn-secondary"
-                                    style="width: 100%; margin-bottom: 10px; background-color: #7f8c8d;">
-                                    <i class="fas fa-images"></i> Pilih dari Galeri Supabase
+                            </div>
+                        </div>
+
+                        <!-- Daftar Opsi Box -->
+                        <div class="admin-section" id="box-options-list-section">
+                            <div class="section-header" style="align-items: center;">
+                                <h2><i class="fas fa-archive"></i> Daftar Opsi Box</h2>
+                                <button type="button" class="btn btn-success" id="open-add-box-btn"
+                                    onclick="window.openAddBoxModal()" style="margin-left: 15px; border-radius: 8px;">
+                                    <i class="fas fa-plus"></i> Tambah Opsi Box Baru
                                 </button>
-                                <input type="text" id="admin-box-option-image" class="form-control"
-                                    placeholder="URL Gambar Box">
-                                <div id="box-image-preview"
-                                    style="margin-top: 10px; display: flex; justify-content: center;"></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="admin-box-option-price">Harga Tambahan</label>
-                                <input type="number" id="admin-box-option-price" class="form-control"
-                                    placeholder="Harga tambahan per unit">
-                            </div>
-                            <div class="form-group">
-                                <label>Kategori Berlaku</label>
-                                <div id="admin-box-option-categories" class="checkbox-container">
-                                    <!-- Checkbox kategori akan ditambahkan secara dinamis -->
+                                <div class="list-controls" style="margin-left: auto;">
+                                    <input type="text" id="box-search" class="form-control search-input"
+                                        placeholder="Cari nama box..." oninput="window.filterBoxOptions(this.value)">
                                 </div>
                             </div>
-                            <button class="btn" id="add-box-option">
-                                <i class="fas fa-plus"></i> Tambah Opsi Box
-                            </button>
                             <div class="box-options-list" id="box-options-list">
                                 <!-- Daftar opsi box akan ditambahkan secara dinamis -->
                             </div>
