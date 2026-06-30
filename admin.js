@@ -112,13 +112,20 @@ function initializeElements() {
         openLibraryBtn: document.getElementById('open-library-btn'),
         productCategory: document.getElementById('admin-product-category'),
         productFormModal: document.getElementById('product-form-modal'),
+        productUploadPrefix: document.getElementById('product-upload-prefix'),
+        productCompressQuality: document.getElementById('product-compress-quality'),
 
         // BOX OPTIONS FIELDS
         boxUpload: document.getElementById('box-upload'),
         boxUploadBtn: document.getElementById('box-upload-btn'),
         openBoxLibraryBtn: document.getElementById('open-box-library-btn'),
-        boxImageInput: document.getElementById('admin-box-option-image'),
-        boxImagePreview: document.getElementById('box-image-preview'),
+        boxImageInput: document.getElementById('admin-box-option-image'),       // hidden input
+        boxImagesTextarea: document.getElementById('admin-box-option-images'),  // textarea multi-URL
+        boxImagePreviews: document.getElementById('box-image-previews'),        // container preview
+        boxFormModal: document.getElementById('box-form-modal'),
+        updateBoxOption: document.getElementById('update-box-option'),
+        boxUploadPrefix: document.getElementById('box-upload-prefix'),
+        boxCompressQuality: document.getElementById('box-compress-quality'),
 
         // Other elements
         productType: document.getElementById('admin-product-type'),
@@ -178,10 +185,30 @@ window.updateImagePreviews = function () {
 
 window.useImageFromLibrary = function (url, cardElement) {
     if (window.galleryTarget === 'box') {
-        elements.boxImageInput.value = url;
-        window.updateBoxImagePreview();
-        elements.libraryModal.classList.remove('active');
-        showMessage('Gambar Box dipilih.', 'success');
+        // Tambahkan ke daftar URL box (multi-gambar)
+        if (!elements.boxImagesTextarea) return;
+        let urls = elements.boxImagesTextarea.value.split(/[\n,]+/).map(u => u.trim()).filter(u => u && u.startsWith('http'));
+        const index = urls.indexOf(url);
+        if (index > -1) {
+            urls.splice(index, 1);
+            if (cardElement) {
+                cardElement.style.borderColor = '#f1f5f9';
+                const check = cardElement.querySelector('.check-badge');
+                if (check) check.remove();
+            }
+        } else {
+            urls.push(url);
+            if (cardElement) {
+                cardElement.style.borderColor = '#7a5af5';
+                const badge = document.createElement('div');
+                badge.className = 'check-badge';
+                badge.style.cssText = 'position:absolute; top:5px; left:5px; background:#7a5af5; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); font-size:12px; z-index:2;';
+                badge.innerHTML = '<i class="fas fa-check"></i>';
+                cardElement.appendChild(badge);
+            }
+        }
+        elements.boxImagesTextarea.value = urls.join(',\n');
+        window.updateBoxImagePreviews();
     } else {
         if (!elements.productImages) return;
         let urls = elements.productImages.value.split(/[\n,]+/).map(u => u.trim()).filter(u => u && u.startsWith('http'));
@@ -209,25 +236,40 @@ window.useImageFromLibrary = function (url, cardElement) {
     }
 };
 
-window.updateBoxImagePreview = function () {
-    if (!elements.boxImageInput || !elements.boxImagePreview) return;
-    const url = elements.boxImageInput.value.trim();
-    if (url) {
-        elements.boxImagePreview.innerHTML = `
-            <div style="position:relative; display:inline-block;">
-                <img src="${url}" style="width:120px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #ddd;">
-                <button type="button" onclick="window.clearBoxImage()" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:white; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 2px 5px rgba(0,0,0,0.2)">&times;</button>
-            </div>
+// Helper untuk preview multi-gambar box
+window.removeBoxImageUrl = function (idx) {
+    if (!elements.boxImagesTextarea) return;
+    let urls = elements.boxImagesTextarea.value.split(/[\n,]+/).map(u => u.trim()).filter(u => u && u.startsWith('http'));
+    urls.splice(idx, 1);
+    elements.boxImagesTextarea.value = urls.join(',\n');
+    window.updateBoxImagePreviews();
+};
+
+window.updateBoxImagePreviews = function () {
+    if (!elements.boxImagesTextarea || !elements.boxImagePreviews) return;
+    const urls = elements.boxImagesTextarea.value.split(/[\n,]+/).map(u => u.trim()).filter(u => u && u.startsWith('http'));
+    elements.boxImagePreviews.innerHTML = '';
+    urls.forEach((url, idx) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'position:relative; width:80px; height:80px; margin-bottom:4px;';
+        div.innerHTML = `
+            <img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; border:${idx === 0 ? '2px solid #3b82f6' : '1px solid #ddd'};" title="${idx === 0 ? 'Gambar Utama' : 'Gambar Galeri ' + idx}">
+            ${idx === 0 ? '<span style="position:absolute;bottom:2px;left:2px;background:#3b82f6;color:white;font-size:9px;padding:1px 4px;border-radius:3px;">Utama</span>' : ''}
+            <button type="button" onclick="window.removeBoxImageUrl(${idx})" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:white; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 2px 5px rgba(0,0,0,0.2)">&times;</button>
         `;
-    } else {
-        elements.boxImagePreview.innerHTML = '';
-    }
+        elements.boxImagePreviews.appendChild(div);
+    });
+};
+
+// Dipertahankan untuk backward-compat (digunakan internal)
+window.updateBoxImagePreview = function () {
+    window.updateBoxImagePreviews();
 };
 
 window.clearBoxImage = function () {
-    if (elements.boxImageInput) {
-        elements.boxImageInput.value = '';
-        window.updateBoxImagePreview();
+    if (elements.boxImagesTextarea) {
+        elements.boxImagesTextarea.value = '';
+        window.updateBoxImagePreviews();
     }
 };
 
@@ -442,9 +484,21 @@ function setupEventListeners() {
     // =================================================================================
     // EVENT LISTENER BARU UNTUK OPSI BOX DAN TIPE PRODUK - DIPERBAIKI
     // =================================================================================
-    // Box Options - DIPERBAIKI: Gunakan delegated event handling
+    // Box Options - Tombol Tambah dan Update di dalam modal
     if (elements.addBoxOption) {
-        elements.addBoxOption.addEventListener('click', handleBoxOptionAction);
+        elements.addBoxOption.addEventListener('click', addBoxOption);
+    }
+    if (elements.updateBoxOption) {
+        elements.updateBoxOption.addEventListener('click', updateBoxOption);
+    }
+
+    // Tutup modal box saat klik luar area modal
+    if (elements.boxFormModal) {
+        elements.boxFormModal.addEventListener('click', function (e) {
+            if (e.target === elements.boxFormModal) {
+                window.closeBoxModal();
+            }
+        });
     }
 
     // Product Type Change
@@ -484,8 +538,8 @@ function setupEventListeners() {
         elements.boxUploadBtn.addEventListener('click', handleBoxFileUpload);
     }
 
-    if (elements.boxImageInput) {
-        elements.boxImageInput.addEventListener('input', window.updateBoxImagePreview);
+    if (elements.boxImagesTextarea) {
+        elements.boxImagesTextarea.addEventListener('input', window.updateBoxImagePreviews);
     }
 
     if (elements.closeLibrary) {
@@ -641,6 +695,17 @@ async function handleFileUpload() {
         return;
     }
 
+    // Ambil prefix nama file kustom & bersihkan agar aman sebagai URL path
+    let prefix = (elements.productUploadPrefix ? elements.productUploadPrefix.value.trim() : '');
+    prefix = prefix.toLowerCase()
+        .replace(/[^a-z0-9\-_]/g, '-') // Ganti karakter non-alfanumerik dengan "-"
+        .replace(/-+/g, '-')          // Gabungkan beberapa "-" berurutan
+        .replace(/^-|-$/g, '');        // Bersihkan "-" di ujung-ujung
+
+    // Ambil persentase kompresi dari input range (default 82%)
+    const qualityPercent = elements.productCompressQuality ? parseInt(elements.productCompressQuality.value) : 82;
+    const compressionQuality = qualityPercent / 100; // Ubah ke range 0.1 - 1.0
+
     elements.uploadBtn.disabled = true;
     elements.uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengompresi...';
 
@@ -650,21 +715,30 @@ async function handleFileUpload() {
         let totalOriginalKB = 0;
         let totalCompressedKB = 0;
 
+        let indexCounter = 1;
         for (const file of files) {
-            // Kompresi gambar ke WebP sebelum upload
-            showMessage(`Mengompresi ${file.name}...`, 'info');
+            // Kompresi gambar ke WebP sebelum upload dengan kualitas dinamis
+            showMessage(`Mengompresi ${file.name} (${qualityPercent}% kualitas)...`, 'info');
             const { blob, originalSize, compressedSize } = await compressImageToWebP(file, {
                 maxWidth: 1200,
                 maxHeight: 1200,
-                quality: 0.82
+                quality: compressionQuality
             });
 
             totalOriginalKB += originalSize / 1024;
             totalCompressedKB += compressedSize / 1024;
 
-            // Selalu simpan sebagai .webp
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.webp`;
+            // Generate nama file unik menggunakan prefix kustom atau default timestamp
+            const randomCode = Math.random().toString(36).substring(2, 7); // Hash pendek 5 karakter
+            let fileName;
+            if (prefix) {
+                // Jika banyak file: lemper-1-hash.webp, lemper-2-hash.webp, dll.
+                fileName = `${prefix}-${indexCounter}-${randomCode}.webp`;
+            } else {
+                fileName = `${Date.now()}-${randomCode}.webp`;
+            }
             const filePath = `products/${fileName}`;
+            indexCounter++;
 
             elements.uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengupload...';
 
@@ -690,10 +764,11 @@ async function handleFileUpload() {
         const savedKB = totalOriginalKB - totalCompressedKB;
         const savedPercent = totalOriginalKB > 0 ? Math.round((savedKB / totalOriginalKB) * 100) : 0;
         showMessage(
-            `✓ ${files.length} gambar diupload (WebP). Hemat ${savedPercent}% (${Math.round(savedKB)}KB dari ${Math.round(totalOriginalKB)}KB)`,
+            `✓ ${files.length} gambar diupload (WebP, Kualitas: ${qualityPercent}%). Hemat ${savedPercent}% (${Math.round(savedKB)}KB)`,
             'success'
         );
         elements.productUpload.value = '';
+        if (elements.productUploadPrefix) elements.productUploadPrefix.value = ''; // Reset input prefix
 
     } catch (error) {
         console.error('Upload error:', error);
@@ -706,44 +781,91 @@ async function handleFileUpload() {
 
 // HANDLE BOX IMAGE UPLOAD (dengan kompresi WebP otomatis)
 async function handleBoxFileUpload() {
-    if (!elements.boxUpload || !elements.boxUpload.files.length) {
-        showMessage('Pilih file gambar box!', 'warning');
+    const files = elements.boxUpload.files;
+    if (files.length === 0) {
+        showMessage('Pilih file gambar box terlebih dahulu!', 'warning');
         return;
     }
 
-    const file = elements.boxUpload.files[0];
-    elements.boxUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    // Ambil prefix nama file kustom & bersihkan agar aman sebagai URL path
+    let prefix = (elements.boxUploadPrefix ? elements.boxUploadPrefix.value.trim() : '');
+    prefix = prefix.toLowerCase()
+        .replace(/[^a-z0-9\-_]/g, '-') // Ganti karakter non-alfanumerik dengan "-"
+        .replace(/-+/g, '-')          // Gabungkan beberapa "-" berurutan
+        .replace(/^-|-$/g, '');        // Bersihkan "-" di ujung-ujung
+
+    // Ambil persentase kompresi dari input range (default 82%)
+    const qualityPercent = elements.boxCompressQuality ? parseInt(elements.boxCompressQuality.value) : 82;
+    const compressionQuality = qualityPercent / 100; // Ubah ke range 0.1 - 1.0
+
     elements.boxUploadBtn.disabled = true;
+    elements.boxUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
     try {
         const client = window.supabaseClient;
+        const uploadedUrls = [];
+        let totalOriginalKB = 0;
+        let totalCompressedKB = 0;
 
-        // Kompresi gambar box sebelum upload (ukuran lebih kecil karena hanya thumbnail)
-        const { blob, originalSize, compressedSize } = await compressImageToWebP(file, {
-            maxWidth: 600,
-            maxHeight: 600,
-            quality: 0.80
-        });
+        let indexCounter = 1;
+        for (const file of files) {
+            showMessage(`Mengompresi ${file.name} (${qualityPercent}% kualitas)...`, 'info');
+            const { blob, originalSize, compressedSize } = await compressImageToWebP(file, {
+                maxWidth: 1200, // Pertahankan resolusi yang layak untuk galeri zoom
+                maxHeight: 1200,
+                quality: compressionQuality
+            });
 
-        const fileName = `box-${Math.random().toString(36).substring(2)}-${Date.now()}.webp`;
-        const filePath = `products/${fileName}`;
+            totalOriginalKB += originalSize / 1024;
+            totalCompressedKB += compressedSize / 1024;
 
-        const { error: uploadError } = await client.storage.from('product-images').upload(filePath, blob, { contentType: 'image/webp' });
-        if (uploadError) throw uploadError;
+            // Generate nama file unik menggunakan prefix kustom atau default box prefix
+            const randomCode = Math.random().toString(36).substring(2, 7); // Hash pendek 5 karakter
+            let fileName;
+            if (prefix) {
+                fileName = `${prefix}-${indexCounter}-${randomCode}.webp`;
+            } else {
+                fileName = `box-${Date.now()}-${randomCode}.webp`;
+            }
+            const filePath = `products/${fileName}`;
+            indexCounter++;
 
-        const { data: { publicUrl } } = client.storage.from('product-images').getPublicUrl(filePath);
+            elements.boxUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
-        elements.boxImageInput.value = publicUrl;
-        window.updateBoxImagePreview();
+            const { error: uploadError } = await client.storage
+                .from('product-images')
+                .upload(filePath, blob, { contentType: 'image/webp' });
 
-        const savedPercent = originalSize > 0 ? Math.round(((originalSize - compressedSize) / originalSize) * 100) : 0;
-        showMessage(`Gambar box diupload (WebP, hemat ${savedPercent}%)!`, 'success');
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = client.storage
+                .from('product-images')
+                .getPublicUrl(filePath);
+
+            uploadedUrls.push(publicUrl);
+        }
+
+        const currentUrls = elements.boxImagesTextarea.value ? elements.boxImagesTextarea.value.split(/[\n,]+/).map(u => u.trim()).filter(u => u) : [];
+        const combinedUrls = [...currentUrls, ...uploadedUrls].filter(u => u).join(',\n');
+
+        elements.boxImagesTextarea.value = combinedUrls;
+        window.updateBoxImagePreviews();
+
+        const savedKB = totalOriginalKB - totalCompressedKB;
+        const savedPercent = totalOriginalKB > 0 ? Math.round((savedKB / totalOriginalKB) * 100) : 0;
+        showMessage(
+            `✓ ${files.length} gambar box diupload (WebP, Kualitas: ${qualityPercent}%). Hemat ${savedPercent}% (${Math.round(savedKB)}KB)`,
+            'success'
+        );
+        elements.boxUpload.value = '';
+        if (elements.boxUploadPrefix) elements.boxUploadPrefix.value = ''; // Reset input prefix
 
     } catch (error) {
-        showMessage('Gagal upload: ' + error.message, 'error');
+        console.error('Box upload error:', error);
+        showMessage('Gagal upload gambar box: ' + error.message, 'error');
     } finally {
-        elements.boxUploadBtn.innerHTML = '<i class="fas fa-upload"></i>';
         elements.boxUploadBtn.disabled = false;
+        elements.boxUploadBtn.innerHTML = '<i class="fas fa-upload"></i>';
     }
 }
 
@@ -1158,186 +1280,251 @@ function renderCategories() {
 }
 
 // =================================================================================
-// FUNGSI BARU UNTUK OPSI BOX - DIPERBAIKI LENGKAP
+// FUNGSI BARU UNTUK OPSI BOX - DENGAN MODAL POPUP & MULTI-GAMBAR
 // =================================================================================
 
-// Fungsi untuk menangani aksi opsi box (tambah/update) - BARU
-function handleBoxOptionAction() {
-    if (editingBoxOptionIndex !== null) {
-        updateBoxOption();
-    } else {
-        addBoxOption();
+// Buka modal untuk TAMBAH opsi box baru
+window.openAddBoxModal = function () {
+    editingBoxOptionIndex = null;
+    resetBoxOptionForm();
+    const title = document.getElementById('box-modal-title');
+    if (title) title.innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Opsi Box Baru';
+    if (elements.addBoxOption) elements.addBoxOption.style.display = 'inline-flex';
+    if (elements.updateBoxOption) elements.updateBoxOption.style.display = 'none';
+    if (elements.boxFormModal) elements.boxFormModal.classList.add('active');
+};
+
+// Buka modal untuk EDIT opsi box
+window.openEditBoxModal = function (index) {
+    editingBoxOptionIndex = index;
+    const boxOption = appData.opsiBoxGlobal[index];
+
+    // Isi form
+    elements.boxOptionName.value = boxOption.nama || '';
+    elements.boxOptionPrice.value = boxOption.tambahan_harga || 0;
+
+    // Kumpulkan semua gambar (utama + tambahan)
+    const allImages = [];
+    if (boxOption.gambar) allImages.push(boxOption.gambar);
+    const extra = boxOption.gambar_tambahan;
+    if (Array.isArray(extra)) {
+        extra.forEach(u => { if (u && !allImages.includes(u)) allImages.push(u); });
+    } else if (typeof extra === 'string') {
+        try {
+            const parsed = JSON.parse(extra);
+            if (Array.isArray(parsed)) parsed.forEach(u => { if (u && !allImages.includes(u)) allImages.push(u); });
+        } catch (e) { }
     }
+    if (elements.boxImagesTextarea) elements.boxImagesTextarea.value = allImages.join(',\n');
+    window.updateBoxImagePreviews();
+
+    // Set checkbox kategori
+    const categoryCheckboxes = elements.boxOptionCategories.querySelectorAll('input[type="checkbox"]');
+    categoryCheckboxes.forEach(cb => {
+        cb.checked = (boxOption.kategori_berlaku || []).includes(cb.value);
+    });
+
+    // Update tampilan modal
+    const title = document.getElementById('box-modal-title');
+    if (title) title.innerHTML = '<i class="fas fa-edit"></i> Edit Opsi Box';
+    if (elements.addBoxOption) elements.addBoxOption.style.display = 'none';
+    if (elements.updateBoxOption) elements.updateBoxOption.style.display = 'inline-flex';
+    if (elements.boxFormModal) elements.boxFormModal.classList.add('active');
+};
+
+// Tutup modal opsi box
+window.closeBoxModal = function () {
+    if (elements.boxFormModal) elements.boxFormModal.classList.remove('active');
+    resetBoxOptionForm();
+};
+
+// Helper: ambil array URL gambar dari textarea
+function getBoxImageUrlsFromForm() {
+    if (!elements.boxImagesTextarea) return [];
+    return elements.boxImagesTextarea.value.split(/[\n,]+/).map(u => u.trim()).filter(u => u && u.startsWith('http'));
 }
 
-// Fungsi untuk menambahkan opsi box - DIPERBAIKI (Async & Supabase)
+// Fungsi untuk menambahkan opsi box
 async function addBoxOption() {
-    console.log('addBoxOption function called');
-
     const name = elements.boxOptionName.value.trim();
-    const image = elements.boxOptionImage.value.trim();
     const price = parseInt(elements.boxOptionPrice.value);
-
-    // Dapatkan kategori yang dipilih dari checkbox
+    const allImages = getBoxImageUrlsFromForm();
     const categoryCheckboxes = elements.boxOptionCategories.querySelectorAll('input[type="checkbox"]:checked');
     const categories = Array.from(categoryCheckboxes).map(cb => cb.value);
 
-    console.log('Form data:', { name, image, price, categories });
-
-    if (!name || !image || isNaN(price) || price < 0 || categories.length === 0) {
-        showMessage('Semua field harus diisi dengan benar! Nama, gambar, harga, dan minimal satu kategori harus dipilih.', 'error');
+    if (!name || allImages.length === 0 || isNaN(price) || price < 0 || categories.length === 0) {
+        showMessage('Nama, minimal satu gambar, harga, dan kategori harus diisi!', 'error');
         return;
     }
 
-    // Pastikan opsiBoxGlobal ada di appData
-    if (!appData.opsiBoxGlobal) {
-        appData.opsiBoxGlobal = [];
-    }
+    if (!appData.opsiBoxGlobal) appData.opsiBoxGlobal = [];
 
     const newBoxOption = {
-        id: "box_" + Date.now(),
+        id: 'box_' + Date.now(),
         nama: name,
-        gambar: image,
+        gambar: allImages[0],
+        gambar_tambahan: allImages.slice(1),
         tambahan_harga: price,
         kategori_berlaku: categories
     };
 
-    console.log('New box option:', newBoxOption);
-
     appData.opsiBoxGlobal.push(newBoxOption);
     renderBoxOptions();
-    resetBoxOptionForm();
-    showMessage('Opsi box berhasil ditambahkan lokal!', 'success');
+    window.closeBoxModal();
+    showMessage('Menambahkan opsi box ke Supabase...', 'info');
 
-    // Simpan ke Supabase
     try {
-        await saveToSupabase();
+        const { error } = await window.supabaseClient.from('box_options').insert({
+            id: newBoxOption.id,
+            nama: newBoxOption.nama,
+            gambar: newBoxOption.gambar,
+            gambar_tambahan: newBoxOption.gambar_tambahan,
+            tambahan_harga: newBoxOption.tambahan_harga,
+            kategori_berlaku: newBoxOption.kategori_berlaku
+        });
+        if (error) throw error;
         showMessage('Opsi box berhasil disimpan ke Supabase!', 'success');
     } catch (err) {
-        showMessage('Gagal menyimpan ke Supabase: ' + err.message, 'error');
+        showMessage('Opsi box tersimpan lokal, gagal ke Supabase: ' + err.message, 'error');
     }
 }
 
-// Fungsi untuk merender opsi box - DIPERBAIKI
+// Render daftar opsi box
 function renderBoxOptions() {
     const boxOptionsList = elements.boxOptionsList;
-    if (!boxOptionsList) {
-        console.error('boxOptionsList element not found');
-        return;
-    }
+    if (!boxOptionsList) return;
 
-    boxOptionsList.innerHTML = '';
+    // Hapus event listener lama dengan cloneNode
+    boxOptionsList.replaceWith(boxOptionsList.cloneNode(false));
+    elements.boxOptionsList = document.getElementById('box-options-list');
+    const list = elements.boxOptionsList;
 
-    // Pastikan opsiBoxGlobal ada
     if (!appData.opsiBoxGlobal || appData.opsiBoxGlobal.length === 0) {
-        boxOptionsList.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">Belum ada opsi box. Tambahkan opsi box baru.</p>';
+        list.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">Belum ada opsi box. Klik "Tambah Opsi Box Baru" untuk menambahkan.</p>';
         return;
     }
 
     appData.opsiBoxGlobal.forEach((boxOption, index) => {
+        const thumbUrl = boxOption.gambar ? getOptimizedImageKitUrl(boxOption.gambar, { width: 100, quality: 60 }) : '';
+        const extraCount = Array.isArray(boxOption.gambar_tambahan) ? boxOption.gambar_tambahan.length : 0;
+        const totalImages = (boxOption.gambar ? 1 : 0) + extraCount;
+
         const listItem = document.createElement('div');
-        listItem.className = 'list-item';
+        listItem.className = 'product-item';
         listItem.innerHTML = `
-            <div class="box-option-info">
-                <div class="box-option-name">${boxOption.nama}</div>
-                <div class="box-option-details">
-                    <span class="box-option-price">+Rp ${boxOption.tambahan_harga.toLocaleString('id-ID')}</span>
-                    <span class="box-option-categories">Berlaku untuk: ${boxOption.kategori_berlaku.join(', ')}</span>
+            <div class="product-info">
+                <div class="product-name">${boxOption.nama}</div>
+                <div class="product-details">
+                    <span class="product-price">+Rp ${(boxOption.tambahan_harga || 0).toLocaleString('id-ID')}</span>
+                    <span class="product-category">${(boxOption.kategori_berlaku || []).join(', ')}</span>
+                </div>
+                <div class="product-preview">
+                    ${thumbUrl ? `<img src="${thumbUrl}" alt="${boxOption.nama}" style="max-width: 80px; max-height: 60px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : ''}
+                </div>
+                <div class="product-images-info">
+                    <i class="fas fa-images"></i> ${totalImages} gambar
+                    ${totalImages > 1 ? '(Galeri tersedia)' : ''}
+                </div>
+                <div class="quick-actions">
+                    <button class="quick-action-btn edit" data-index="${index}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="quick-action-btn delete" data-index="${index}">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
                 </div>
             </div>
-            <div class="item-actions">
-                <button class="action-btn edit-btn" data-index="${index}" title="Edit Opsi Box">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn delete-btn" data-index="${index}" title="Hapus Opsi Box">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
         `;
-        boxOptionsList.appendChild(listItem);
+        list.appendChild(listItem);
     });
 
-    // Tambahkan event listener untuk edit dan delete
-    boxOptionsList.addEventListener('click', function (e) {
-        if (e.target.closest('.edit-btn')) {
-            const button = e.target.closest('.edit-btn');
-            const index = parseInt(button.dataset.index);
-            editBoxOption(index);
-        } else if (e.target.closest('.delete-btn')) {
-            const button = e.target.closest('.delete-btn');
-            const index = parseInt(button.dataset.index);
+    list.addEventListener('click', function (e) {
+        const editBtn = e.target.closest('.quick-action-btn.edit');
+        const deleteBtn = e.target.closest('.quick-action-btn.delete');
+        if (editBtn) {
+            const index = parseInt(editBtn.dataset.index);
+            window.openEditBoxModal(index);
+        } else if (deleteBtn) {
+            const index = parseInt(deleteBtn.dataset.index);
             deleteBoxOption(index);
         }
     });
 }
 
-// Fungsi untuk mengedit opsi box - DIPERBAIKI
-function editBoxOption(index) {
-    const boxOption = appData.opsiBoxGlobal[index];
+// Filter daftar opsi box berdasarkan teks pencarian
+window.filterBoxOptions = function (searchTerm) {
+    const keyword = (searchTerm || '').toLowerCase().trim();
+    const list = document.getElementById('box-options-list');
+    if (!list) return;
 
-    // Isi form dengan data yang ada
-    elements.boxOptionName.value = boxOption.nama;
-    elements.boxOptionImage.value = boxOption.gambar;
-    elements.boxOptionPrice.value = boxOption.tambahan_harga;
+    const items = list.querySelectorAll('.product-item');
+    let visibleCount = 0;
 
-    // Tampilkan preview gambar
-    window.updateBoxImagePreview();
-
-    // Set checkbox kategori
-    const categoryCheckboxes = elements.boxOptionCategories.querySelectorAll('input[type="checkbox"]');
-    categoryCheckboxes.forEach(cb => {
-        cb.checked = boxOption.kategori_berlaku.includes(cb.value);
+    items.forEach(item => {
+        const name = item.querySelector('.product-name')?.textContent.toLowerCase() || '';
+        const category = item.querySelector('.product-category')?.textContent.toLowerCase() || '';
+        const match = !keyword || name.includes(keyword) || category.includes(keyword);
+        item.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
     });
 
-    // Set state editing
-    editingBoxOptionIndex = index;
+    // Tampilkan pesan kosong jika tidak ada yang cocok
+    let emptyMsg = list.querySelector('.box-search-empty');
+    if (visibleCount === 0 && keyword) {
+        if (!emptyMsg) {
+            emptyMsg = document.createElement('p');
+            emptyMsg.className = 'box-search-empty';
+            emptyMsg.style.cssText = 'text-align:center; padding:20px; color:#94a3b8;';
+            list.appendChild(emptyMsg);
+        }
+        emptyMsg.textContent = `Tidak ada opsi box yang cocok dengan "${searchTerm}".`;
+    } else if (emptyMsg) {
+        emptyMsg.remove();
+    }
+};
 
-    // Ubah tombol tambah menjadi update
-    elements.addBoxOption.textContent = 'Update Opsi Box';
-    elements.addBoxOption.classList.add('editing');
 
-    // Scroll ke form
-    document.getElementById('box-options-section').scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-    });
-
-    showMessage('Edit mode aktif. Silakan ubah data opsi box.', 'success');
-}
-
-// Fungsi untuk update opsi box - DIPERBAIKI (Async & Supabase)
+// Fungsi untuk update opsi box
 async function updateBoxOption() {
     if (editingBoxOptionIndex === null) return;
 
     const name = elements.boxOptionName.value.trim();
-    const image = elements.boxOptionImage.value.trim();
     const price = parseInt(elements.boxOptionPrice.value);
+    const allImages = getBoxImageUrlsFromForm();
     const categoryCheckboxes = elements.boxOptionCategories.querySelectorAll('input[type="checkbox"]:checked');
     const categories = Array.from(categoryCheckboxes).map(cb => cb.value);
 
-    if (!name || !image || isNaN(price) || price < 0 || categories.length === 0) {
-        showMessage('Semua field harus diisi dengan benar!', 'error');
+    if (!name || allImages.length === 0 || isNaN(price) || price < 0 || categories.length === 0) {
+        showMessage('Nama, minimal satu gambar, harga, dan kategori harus diisi!', 'error');
         return;
     }
 
-    // Update data yang ada, bukan buat baru
     appData.opsiBoxGlobal[editingBoxOptionIndex] = {
         ...appData.opsiBoxGlobal[editingBoxOptionIndex],
         nama: name,
-        gambar: image,
+        gambar: allImages[0],
+        gambar_tambahan: allImages.slice(1),
         tambahan_harga: price,
         kategori_berlaku: categories
     };
 
+    const updatedBox = appData.opsiBoxGlobal[editingBoxOptionIndex];
     renderBoxOptions();
-    resetBoxOptionForm();
-    showMessage('Opsi box berhasil diupdate lokal!', 'success');
+    window.closeBoxModal();
+    showMessage('Mengupdate opsi box di Supabase...', 'info');
 
     try {
-        await saveToSupabase();
+        const { error } = await window.supabaseClient.from('box_options').update({
+            nama: updatedBox.nama,
+            gambar: updatedBox.gambar,
+            gambar_tambahan: updatedBox.gambar_tambahan,
+            tambahan_harga: updatedBox.tambahan_harga,
+            kategori_berlaku: updatedBox.kategori_berlaku
+        }).eq('id', updatedBox.id);
+        if (error) throw error;
         showMessage('Opsi box berhasil diupdate di Supabase!', 'success');
     } catch (err) {
-        showMessage('Gagal update Supabase: ' + err.message, 'error');
+        showMessage('Update lokal sukses, gagal ke Supabase: ' + err.message, 'error');
     }
 }
 
@@ -1366,21 +1553,18 @@ async function deleteBoxOption(index) {
     }
 }
 
-// Fungsi untuk mereset form opsi box - DIPERBAIKI
+// Fungsi untuk mereset form opsi box
 function resetBoxOptionForm() {
-    elements.boxOptionName.value = '';
-    elements.boxOptionImage.value = '';
-    elements.boxOptionPrice.value = '';
+    if (elements.boxOptionName) elements.boxOptionName.value = '';
+    if (elements.boxOptionPrice) elements.boxOptionPrice.value = '';
+    if (elements.boxImagesTextarea) elements.boxImagesTextarea.value = '';
+    if (elements.boxImageInput) elements.boxImageInput.value = '';
+    window.updateBoxImagePreviews();
 
     // Reset checkbox
-    const categoryCheckboxes = elements.boxOptionCategories.querySelectorAll('input[type="checkbox"]');
-    categoryCheckboxes.forEach(cb => {
-        cb.checked = false;
-    });
-
-    // Kembalikan tombol ke state tambah
-    elements.addBoxOption.textContent = 'Tambah Opsi Box';
-    elements.addBoxOption.classList.remove('editing');
+    if (elements.boxOptionCategories) {
+        elements.boxOptionCategories.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    }
 
     // Reset state editing
     editingBoxOptionIndex = null;
@@ -2157,6 +2341,7 @@ async function saveToSupabase() {
                     id: box.id,
                     nama: box.nama,
                     gambar: box.gambar,
+                    gambar_tambahan: box.gambar_tambahan || [],
                     tambahan_harga: box.tambahan_harga,
                     kategori_berlaku: box.kategori_berlaku
                 });
