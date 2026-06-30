@@ -45,7 +45,7 @@
             connectBtn.textContent = 'Putuskan';
         } else {
             statusDot.className = 'indicator-dot dot-disconnected mr-1';
-            statusText.textContent = isBluetoothAvailable() ? 'Printer: Belum terhubung' : 'Bluetooth tidak tersedia (HTTPS)';
+            statusText.textContent = isBluetoothAvailable() ? '🖨️ : Terputus ' : 'Bluetooth tidak tersedia (HTTPS)';
             connectBtn.textContent = 'Hubungkan 🖨️';
         }
     }
