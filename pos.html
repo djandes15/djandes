@@ -308,237 +308,6 @@
                 display: none !important;
             }
         }
-
-        /* ── POS BOX SELECTION MODAL ── */
-        #pos-box-modal-overlay,
-        #pos-snack-modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(0, 0, 0, 0.75);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .pos-modal-sheet {
-            background: #fff;
-            border-radius: 20px 20px 0 0;
-            width: 100%;
-            max-width: 520px;
-            max-height: 92dvh;
-            overflow-y: auto;
-            padding: 20px 16px 32px;
-            box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.25);
-        }
-
-        .dark .pos-modal-sheet {
-            background: #1e2736;
-        }
-
-        .pos-modal-sheet h2 {
-            font-size: 16px;
-            font-weight: 800;
-            color: #92400e;
-            margin-bottom: 4px;
-        }
-
-        .dark .pos-modal-sheet h2 {
-            color: #fcd34d;
-        }
-
-        .pos-box-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 12px 0;
-        }
-
-        .pos-box-card {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            cursor: pointer;
-            overflow: hidden;
-            transition: border-color .15s, box-shadow .15s;
-            background: #f9fafb;
-        }
-
-        .dark .pos-box-card {
-            background: #1a2233;
-            border-color: #374151;
-        }
-
-        .pos-box-card.selected {
-            border-color: #f59e0b;
-            box-shadow: 0 0 0 2px #f59e0b60;
-        }
-
-        .pos-box-card img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-        }
-
-        .pos-box-card-info {
-            padding: 6px 8px;
-        }
-
-        .pos-box-card-info p {
-            font-size: 12px;
-            font-weight: 700;
-            color: #1f2937;
-            line-height: 1.2;
-        }
-
-        .dark .pos-box-card-info p {
-            color: #f3f4f6;
-        }
-
-        .pos-box-card-info span {
-            font-size: 11px;
-            color: #059669;
-            font-weight: 600;
-        }
-
-        .pos-qty-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 10px 0;
-        }
-
-        .pos-qty-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 22px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pos-qty-btn.minus {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .pos-qty-btn.plus {
-            background: #f59e0b;
-            color: #fff;
-        }
-
-        .pos-qty-input {
-            width: 64px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: 700;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 6px 0;
-        }
-
-        .dark .pos-qty-input {
-            background: #1a2233;
-            color: #f3f4f6;
-            border-color: #4b5563;
-        }
-
-        .pos-confirm-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: none;
-            background: #f59e0b;
-            color: #fff;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background .15s;
-        }
-
-        .pos-confirm-btn:hover {
-            background: #d97706;
-        }
-
-        .pos-confirm-btn:disabled {
-            background: #d1d5db;
-            color: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        /* Snack box component grid */
-        .pos-comp-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin: 10px 0;
-        }
-
-        .pos-comp-card {
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            cursor: pointer;
-            overflow: hidden;
-            background: #f9fafb;
-            position: relative;
-        }
-
-        .dark .pos-comp-card {
-            background: #1a2233;
-            border-color: #374151;
-        }
-
-        .pos-comp-card.selected {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px #3b82f660;
-        }
-
-        .pos-comp-card img {
-            width: 100%;
-            height: 70px;
-            object-fit: cover;
-        }
-
-        .pos-comp-card-info {
-            padding: 4px 6px 6px;
-        }
-
-        .pos-comp-card-info p {
-            font-size: 11px;
-            font-weight: 700;
-            color: #1f2937;
-            line-height: 1.2;
-        }
-
-        .dark .pos-comp-card-info p {
-            color: #f3f4f6;
-        }
-
-        .pos-comp-check {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #3b82f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 12px;
-            font-weight: 800;
-            display: none;
-        }
-
-        .pos-comp-card.selected .pos-comp-check {
-            display: flex;
-        }
     </style>
 </head>
 
@@ -1043,27 +812,9 @@
                 } else {
                     fallbackToLocalData();
                 }
-
-                // Muat opsi box dari Supabase
-                try {
-                    const { data: boxData } = await window.supabaseClient
-                        .from('box_options').select('*');
-                    if (boxData && boxData.length > 0) {
-                        window.appData.opsiBoxGlobal = boxData;
-                        localStorage.setItem('cached_box_options', JSON.stringify(boxData));
-                    } else {
-                        const cached = localStorage.getItem('cached_box_options');
-                        if (cached) window.appData.opsiBoxGlobal = JSON.parse(cached);
-                    }
-                } catch (_) {
-                    const cached = localStorage.getItem('cached_box_options');
-                    if (cached) window.appData.opsiBoxGlobal = JSON.parse(cached);
-                }
             } catch (e) {
                 console.error(e);
                 fallbackToLocalData();
-                const cached = localStorage.getItem('cached_box_options');
-                if (cached) window.appData.opsiBoxGlobal = JSON.parse(cached);
             }
 
             renderCategories();
@@ -1154,9 +905,7 @@
             }
 
             grid.innerHTML = items.map(p => {
-                // Cek apakah ada item dengan produk ini di keranjang (bisa berupa composite key)
-                const cartEntries = Object.keys(window.appData.cart).filter(k => k == p.id || k.startsWith(p.id + '_'));
-                const qty = cartEntries.reduce((s, k) => s + (window.appData.cart[k] || 0), 0);
+                const qty = window.appData.cart[p.id] || 0;
                 const isHabis = p.status_stok === 'habis';
                 const isEditing = window.appData.editingPrices[p.id];
                 let imageUrl = p.image || '';
@@ -1164,14 +913,13 @@
                 else if (!imageUrl) imageUrl = window.CONFIG.IMAGEKIT_URL_ENDPOINT + window.CONFIG.DEFAULT_IMAGE;
 
                 const isLocked = window.appData.isPelunasanMode || window.appData.isReadOnlyMode;
-                const hasBox = !!(p.opsi_produk_aktif);
 
                 return `
                     <div class="bg-white rounded-xl shadow-2xs overflow-hidden flex flex-col border ${qty > 0 ? 'border-amber-500 ring-1 ring-amber-500' : 'border-gray-200'} ${isHabis ? 'opacity-60' : ''}">
                         <img src="${imageUrl}" alt="${p.name}" class="h-28 w-full object-cover bg-gray-200 cursor-zoom-in" onerror="this.src='https://placehold.co/150?text=No+Image'" onclick="window.showPosGallery(${p.id})">
                         <div class="p-3 flex flex-col flex-grow justify-between gap-1.5">
                             <div>
-                                <span class="text-[10px] uppercase font-bold text-amber-600 tracking-wider">${p.category || 'Umum'}${hasBox ? ' <span class="text-blue-500">📦</span>' : ''}</span>
+                                <span class="text-[10px] uppercase font-bold text-amber-600 tracking-wider">${p.category || 'Umum'}</span>
                                 <h4 class="font-bold text-sm text-gray-800 line-clamp-1 cursor-pointer hover:text-amber-600" data-description="${(p.description || '').replace(/"/g, '&quot;')}" data-name="${p.name.replace(/"/g, '&quot;')}" onclick="window.showPosDescriptionModal(this.getAttribute('data-name'), this.getAttribute('data-description'))">${p.name}</h4>
                                 <p class="text-xs text-gray-500 line-clamp-2 mt-0.5 cursor-pointer hover:text-amber-600" data-description="${(p.description || '').replace(/"/g, '&quot;')}" data-name="${p.name.replace(/"/g, '&quot;')}" onclick="window.showPosDescriptionModal(this.getAttribute('data-name'), this.getAttribute('data-description'))">${p.description || ''}</p>
                                 <div class="mt-1 flex items-center justify-between gap-1 bg-gray-50 p-1 rounded-md border border-gray-100">
@@ -1193,11 +941,11 @@
                         `<span class="text-center text-xs bg-red-100 text-red-600 font-bold py-1 rounded mt-1">Habis</span>` :
                         `<div class="flex items-center justify-between mt-1">
                                     ${qty > 0 ? `
-                                        <button onclick="${isLocked ? 'return' : `window.posRemoveProduct(${p.id})`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-7 h-7 rounded-lg text-sm ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
-                                        <span class="text-xs font-bold text-gray-700 min-w-[20px] text-center">${qty}</span>
+                                        <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-7 h-7 rounded-lg text-sm ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
+                                        <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded py-1 focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
                                     ` : ''}
-                                    <button onclick="${isLocked ? 'return' : `window.posHandleAddProduct(${p.id})`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${qty > 0 ? 'w-7 h-7' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
-                                        ${qty > 0 ? '+' : (hasBox ? '📦 Pilih Box' : 'Tambah')}
+                                    <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${qty > 0 ? 'w-7 h-7' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
+                                        ${qty > 0 ? '+' : 'Tambah'}
                                     </button>
                                 </div>`
                     }
@@ -1215,12 +963,10 @@
             }
 
             tbody.innerHTML = items.map(p => {
-                const cartEntries = Object.keys(window.appData.cart).filter(k => k == p.id || k.startsWith(p.id + '_'));
-                const qty = cartEntries.reduce((s, k) => s + (window.appData.cart[k] || 0), 0);
+                const qty = window.appData.cart[p.id] || 0;
                 const isHabis = p.status_stok === 'habis';
                 const isEditing = window.appData.editingPrices[p.id];
                 const isLocked = window.appData.isPelunasanMode || window.appData.isReadOnlyMode;
-                const hasBox = !!(p.opsi_produk_aktif);
 
                 return `
                     <tr class="${qty > 0 ? 'bg-amber-50/50 font-medium' : ''} ${isHabis ? 'opacity-50' : ''}">
@@ -1246,9 +992,9 @@
                             ${isHabis ?
                         `<span class="text-xs text-red-500 font-semibold">Habis</span>` :
                         `<div class="flex items-center justify-center gap-1.5">
-                                    <button onclick="${isLocked ? 'return' : `window.posRemoveProduct(${p.id})`}" class="w-6 h-6 flex items-center justify-center bg-gray-100 border border-gray-300 rounded text-xs font-bold ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
-                                    <span class="text-xs font-bold text-gray-700 w-6 text-center">${qty}</span>
-                                    <button onclick="${isLocked ? 'return' : `window.posHandleAddProduct(${p.id})`}" class="w-6 h-6 flex items-center justify-center ${hasBox ? 'bg-blue-500' : 'bg-amber-500'} rounded text-xs font-bold text-white ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">${hasBox && qty === 0 ? '📦' : '+'}</button>
+                                    <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="w-6 h-6 flex items-center justify-center bg-gray-100 border border-gray-300 rounded text-xs font-bold ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
+                                    <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
+                                    <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="w-6 h-6 flex items-center justify-center bg-amber-500 rounded text-xs font-bold text-white ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
                                 </div>`
                     }
                         </td>
@@ -1257,84 +1003,24 @@
             }).join('');
         }
 
-        // ── Hapus satu produk dari keranjang (semua entri composite-nya) ──
-        window.posRemoveProduct = function (productId) {
-            if (window.appData.isPelunasanMode || window.appData.isReadOnlyMode) return;
-            Object.keys(window.appData.cart).forEach(k => {
-                if (k == productId || k.startsWith(productId + '_')) {
-                    delete window.appData.cart[k];
-                    delete window.appData.cartInfo[k];
-                }
-            });
-            renderViews();
-        };
-
-        // ── Tambah produk: buka modal box jika diperlukan, langsung tambah jika tidak ──
-        window.posHandleAddProduct = function (productId) {
-            if (window.appData.isPelunasanMode || window.appData.isReadOnlyMode) return;
-            const product = window.appData.products.find(p => p.id == productId);
-            if (!product) return;
-            if (product.status_stok === 'habis') { window.showNotification('Produk habis stok', 'warning'); return; }
-
-            if (product.opsi_produk_aktif) {
-                if (product.tipe_produk === 'paket_snack_box') {
-                    window.posShowSnackBoxModal(product, (components, qty) => {
-                        window.posShowBoxModal(product, (boxOption, qty2) => {
-                            const key = `${product.id}_${boxOption.id}`;
-                            window.appData.cart[key] = qty2;
-                            window.appData.cartInfo[key] = {
-                                productId: product.id,
-                                boxOptionId: boxOption.id,
-                                boxOptionName: boxOption.nama,
-                                boxOptionPrice: boxOption.tambahan_harga,
-                                components
-                            };
-                            renderViews();
-                            window.showNotification(`${qty2} ${product.name} + ${boxOption.nama} ditambahkan`, 'success');
-                        }, qty);
-                    });
-                } else {
-                    window.posShowBoxModal(product, (boxOption, qty) => {
-                        const key = `${product.id}_${boxOption.id}`;
-                        window.appData.cart[key] = qty;
-                        window.appData.cartInfo[key] = {
-                            productId: product.id,
-                            boxOptionId: boxOption.id,
-                            boxOptionName: boxOption.nama,
-                            boxOptionPrice: boxOption.tambahan_harga,
-                            components: []
-                        };
-                        renderViews();
-                        window.showNotification(`${qty} ${product.name} + ${boxOption.nama} ditambahkan`, 'success');
-                    });
-                }
-            } else {
-                // Langsung tambah tanpa modal
-                const minQty = product.minimal_order || 1;
-                window.appData.cart[product.id] = (window.appData.cart[product.id] || 0) + minQty;
-                window.appData.cartInfo[product.id] = { productId: product.id, boxOptionName: '', boxOptionPrice: 0, components: [] };
-                if (product.minimal_order > 1) window.showNotification(`Min order: ${minQty}`, 'info');
-                renderViews();
-            }
-        };
-
         window.updateCart = function (productId, change) {
             if (window.appData.isPelunasanMode || window.appData.isReadOnlyMode) return;
             const product = window.appData.products.find(p => p.id == productId);
             if (!product) return;
-            // untuk produk berbox, delegate ke posHandleAddProduct
-            if (product.opsi_produk_aktif && change > 0) { window.posHandleAddProduct(productId); return; }
-            const entries = Object.keys(window.appData.cart).filter(k => k == productId || k.startsWith(productId + '_'));
-            if (entries.length > 0 && change < 0) { window.posRemoveProduct(productId); return; }
+
             let currentQty = window.appData.cart[productId] || 0;
             let newQty = currentQty + change;
+
             if (newQty <= 0) {
                 delete window.appData.cart[productId];
                 delete window.appData.cartInfo[productId];
             } else {
-                if (change > 0 && currentQty === 0 && product.minimal_order > 1) { newQty = product.minimal_order; window.showNotification(`Minimal order: ${product.minimal_order}`, 'warning'); }
+                if (change > 0 && currentQty === 0 && product.minimal_order > 1) {
+                    newQty = product.minimal_order;
+                    window.showNotification(`Minimal order: ${product.minimal_order}`, 'warning');
+                }
                 window.appData.cart[productId] = newQty;
-                window.appData.cartInfo[productId] = { productId: product.id, boxOptionName: '', boxOptionPrice: 0, components: [] };
+                window.appData.cartInfo[productId] = { productId: product.id, boxOptionName: product.opsi_produk_aktif ? "Default Box" : "", boxOptionPrice: 0, components: [] };
             }
             renderViews();
         };
@@ -1343,170 +1029,28 @@
             if (window.appData.isPelunasanMode || window.appData.isReadOnlyMode) return;
             const product = window.appData.products.find(p => p.id == productId);
             if (!product) return;
+
             let newQty = parseInt(value);
             if (isNaN(newQty) || newQty <= 0) {
-                window.posRemoveProduct(productId);
+                delete window.appData.cart[productId];
+                delete window.appData.cartInfo[productId];
             } else {
                 const minOrder = product.minimal_order || 1;
-                if (newQty < minOrder) { newQty = minOrder; window.showNotification(`Minimal order: ${minOrder}`, 'warning'); }
+                if (newQty < minOrder) {
+                    newQty = minOrder;
+                    window.showNotification(`Minimal order: ${minOrder}`, 'warning');
+                }
                 window.appData.cart[productId] = newQty;
                 if (!window.appData.cartInfo[productId]) {
-                    window.appData.cartInfo[productId] = { productId: product.id, boxOptionName: '', boxOptionPrice: 0, components: [] };
+                    window.appData.cartInfo[productId] = {
+                        productId: product.id,
+                        boxOptionName: product.opsi_produk_aktif ? "Default Box" : "",
+                        boxOptionPrice: 0,
+                        components: []
+                    };
                 }
             }
             renderViews();
-        };
-
-        // ────────────────────────────────────
-        // Modal Pilih Box (POS)
-        // ────────────────────────────────────
-        window.posShowBoxModal = function (product, callback, prefillQty) {
-            const allBoxes = window.appData.opsiBoxGlobal || [];
-            const applicable = allBoxes.filter(b => b.kategori_berlaku && b.kategori_berlaku.includes(product.category));
-            if (applicable.length === 0) {
-                window.showNotification('Tidak ada opsi box untuk produk ini', 'warning');
-                return;
-            }
-            const modal = document.getElementById('pos-box-modal-overlay');
-            const body = document.getElementById('pos-box-modal-body');
-            const minQty = product.minimal_order || 1;
-            const initQty = prefillQty || minQty;
-            let selectedBox = applicable[0];
-
-            body.innerHTML = `
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-                    <h2>Pilih Opsi Box</h2>
-                    <button onclick="document.getElementById('pos-box-modal-overlay').classList.add('hidden')" style="font-size:22px;background:none;border:none;cursor:pointer;color:#9ca3af">✕</button>
-                </div>
-                <p style="font-size:12px;color:#6b7280;margin-bottom:8px">${product.name}</p>
-                <div class="pos-box-grid" id="pos-box-grid"></div>
-                <div class="pos-qty-row">
-                    <button class="pos-qty-btn minus" onclick="posBoxQtyAdj(-1,${minQty})">−</button>
-                    <input class="pos-qty-input" id="pos-box-qty" type="number" value="${initQty}" min="${minQty}">
-                    <button class="pos-qty-btn plus" onclick="posBoxQtyAdj(1,${minQty})">+</button>
-                </div>
-                ${minQty > 1 ? `<p style="text-align:center;font-size:11px;color:#f59e0b;margin-bottom:6px">Min. order: ${minQty}</p>` : ''}
-                <button class="pos-confirm-btn" id="pos-box-confirm-btn">✅ Tambah ke Keranjang</button>
-            `;
-
-            // Render box cards
-            const grid = body.querySelector('#pos-box-grid');
-            applicable.forEach((box, idx) => {
-                let imgUrl = box.gambar || '';
-                if (imgUrl && !imgUrl.startsWith('http')) imgUrl = window.CONFIG.IMAGEKIT_URL_ENDPOINT + imgUrl;
-                const card = document.createElement('div');
-                card.className = 'pos-box-card' + (idx === 0 ? ' selected' : '');
-                card.innerHTML = `
-                    <img src="${imgUrl}" alt="${box.nama}" onerror="this.src='https://placehold.co/200x100?text=Box'" onclick="window.showPosImageModal('${imgUrl}','${box.nama}')" style="cursor:zoom-in">
-                    <div class="pos-box-card-info">
-                        <p>${box.nama}</p>
-                        <span>+Rp ${Number(box.tambahan_harga).toLocaleString('id-ID')}</span>
-                    </div>`;
-                card.onclick = function (e) {
-                    if (e.target.tagName === 'IMG') return; // biarkan zoom handle
-                    grid.querySelectorAll('.pos-box-card').forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
-                    selectedBox = box;
-                };
-                grid.appendChild(card);
-            });
-
-            body.querySelector('#pos-box-confirm-btn').onclick = function () {
-                const qty = Math.max(minQty, parseInt(body.querySelector('#pos-box-qty').value) || minQty);
-                modal.classList.add('hidden');
-                callback(selectedBox, qty);
-            };
-
-            modal.classList.remove('hidden');
-        };
-
-        window.posBoxQtyAdj = function (delta, min) {
-            const inp = document.getElementById('pos-box-qty');
-            let v = parseInt(inp.value) || min;
-            v = Math.max(min, v + delta);
-            inp.value = v;
-        };
-
-        // ────────────────────────────────────
-        // Modal Snack Box (POS)
-        // ────────────────────────────────────
-        window.posShowSnackBoxModal = function (product, callback) {
-            const paket = product.komponen_paket;
-            const required = paket ? paket.jumlah_wajib_pilih : (product.snack_box_required_count || 0);
-            const allowedIds = paket ? paket.produk_id_yang_boleh_dipilih : (product.snack_box_components || []);
-            if (!required || !allowedIds || allowedIds.length === 0) {
-                window.showNotification('Konfigurasi snack box tidak ditemukan', 'error');
-                return;
-            }
-            const modal = document.getElementById('pos-snack-modal-overlay');
-            const body = document.getElementById('pos-snack-modal-body');
-            const minQty = product.minimal_order || 1;
-            const selected = new Set();
-
-            body.innerHTML = `
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-                    <h2>Pilih Isi Snack Box</h2>
-                    <button onclick="document.getElementById('pos-snack-modal-overlay').classList.add('hidden')" style="font-size:22px;background:none;border:none;cursor:pointer;color:#9ca3af">✕</button>
-                </div>
-                <p style="font-size:12px;color:#6b7280;margin-bottom:4px">${product.name}</p>
-                <p id="pos-snack-count" style="font-size:12px;color:#ef4444;font-weight:700;margin-bottom:8px">0 / ${required} dipilih</p>
-                <div class="pos-comp-grid" id="pos-comp-grid"></div>
-                <div class="pos-qty-row">
-                    <button class="pos-qty-btn minus" onclick="posSnackQtyAdj(-1,${minQty})">−</button>
-                    <input class="pos-qty-input" id="pos-snack-qty" type="number" value="${minQty}" min="${minQty}">
-                    <button class="pos-qty-btn plus" onclick="posSnackQtyAdj(1,${minQty})">+</button>
-                </div>
-                ${minQty > 1 ? `<p style="text-align:center;font-size:11px;color:#f59e0b;margin-bottom:6px">Min. order: ${minQty}</p>` : ''}
-                <button class="pos-confirm-btn" id="pos-snack-confirm-btn" disabled>Pilih Opsi Box ➜</button>
-            `;
-
-            const grid = body.querySelector('#pos-comp-grid');
-            const countEl = body.querySelector('#pos-snack-count');
-            const confirmBtn = body.querySelector('#pos-snack-confirm-btn');
-
-            allowedIds.forEach(cid => {
-                const comp = window.appData.products.find(p => p.id == cid);
-                if (!comp) return;
-                let imgUrl = comp.image || '';
-                if (imgUrl && !imgUrl.startsWith('http')) imgUrl = window.CONFIG.IMAGEKIT_URL_ENDPOINT + imgUrl;
-                const card = document.createElement('div');
-                card.className = 'pos-comp-card';
-                card.innerHTML = `
-                    <img src="${imgUrl}" alt="${comp.name}" onerror="this.src='https://placehold.co/150x70?text=Kue'" onclick="window.showPosImageModal('${imgUrl}','${comp.name}')" style="cursor:zoom-in">
-                    <div class="pos-comp-card-info"><p>${comp.name}</p></div>
-                    <div class="pos-comp-check">✓</div>`;
-                card.onclick = function (e) {
-                    if (e.target.tagName === 'IMG') return;
-                    if (selected.has(cid)) {
-                        selected.delete(cid);
-                        this.classList.remove('selected');
-                    } else if (selected.size < required) {
-                        selected.add(cid);
-                        this.classList.add('selected');
-                    } else {
-                        window.showNotification(`Maksimal ${required} item`, 'warning');
-                    }
-                    countEl.textContent = `${selected.size} / ${required} dipilih`;
-                    countEl.style.color = selected.size === required ? '#059669' : '#ef4444';
-                    confirmBtn.disabled = (selected.size !== required);
-                };
-                grid.appendChild(card);
-            });
-
-            confirmBtn.onclick = function () {
-                const qty = Math.max(minQty, parseInt(body.querySelector('#pos-snack-qty').value) || minQty);
-                modal.classList.add('hidden');
-                callback(Array.from(selected), qty);
-            };
-
-            modal.classList.remove('hidden');
-        };
-
-        window.posSnackQtyAdj = function (delta, min) {
-            const inp = document.getElementById('pos-snack-qty');
-            let v = parseInt(inp.value) || min;
-            v = Math.max(min, v + delta);
-            inp.value = v;
         };
 
         function calculateFinances() {
@@ -2578,32 +2122,18 @@
         </div>
     </div>
 
-    <!-- POS Box Selection Modal -->
-    <div id="pos-box-modal-overlay" class="hidden">
-        <div class="pos-modal-sheet" id="pos-box-modal-body">
-            <!-- Content injected by JS -->
+    <!-- Image Modal for POS (mendukung galeri multi-gambar) -->
+    <div id="image-modal"
+        class="fixed inset-0 bg-black/90 backdrop-blur-xs flex items-center justify-center p-4 z-[9999] hidden"
+        onclick="if(event.target===this) window.closePosImageModal()">
+        <div id="pos-image-modal-content" class="relative max-w-4xl w-full flex items-center justify-center">
+            <button id="close-image-modal"
+                class="absolute top-[-40px] right-0 text-white hover:text-amber-500 text-3xl font-bold">
+                &times;
+            </button>
+            <img id="modal-image" src="" alt="" class="max-h-[90vh] max-w-full object-contain rounded-lg shadow-2xl">
         </div>
     </div>
-
-    <!-- POS Snack Box Modal -->
-    <div id="pos-snack-modal-overlay" class="hidden">
-        <div class="pos-modal-sheet" id="pos-snack-modal-body">
-            <!-- Content injected by JS -->
-        </div>
-
-        <!-- Image Modal for POS (mendukung galeri multi-gambar) -->
-        <div id="image-modal"
-            class="fixed inset-0 bg-black/90 backdrop-blur-xs flex items-center justify-center p-4 z-[9999] hidden"
-            onclick="if(event.target===this) window.closePosImageModal()">
-            <div id="pos-image-modal-content" class="relative max-w-4xl w-full flex items-center justify-center">
-                <button id="close-image-modal"
-                    class="absolute top-[-40px] right-0 text-white hover:text-amber-500 text-3xl font-bold">
-                    &times;
-                </button>
-                <img id="modal-image" src="" alt=""
-                    class="max-h-[90vh] max-w-full object-contain rounded-lg shadow-2xl">
-            </div>
-        </div>
 </body>
 
 </html>
