@@ -1553,7 +1553,7 @@ function addProductToCart(product, quantity) {
     updateCart();
     updateProductButtons();
     saveCartToStorage();
-    showNotification(`${quantity} ${product.name} ditambahkan ke keranjang!`, 'success');
+    showNotification(`${quantity} ${product.name} ditambahkan`, 'success');
 }
 
 // Fungsi untuk menambahkan produk ke keranjang dengan box
