@@ -1,7 +1,5 @@
 const CACHE_NAME = 'djandes-v4'; // Naikkan versi ke v3 agar browser mendownload ulang script yang benar
 const ASSETS = [
-    '/pos',                 // Jalur URL /pos yang Anda buka di browser
-    '/pos.html',            // File fisik HTML Anda
     '/configpos.js',        // File config Anda
     '/printerpos.js',       // File printer Anda
     'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4',
