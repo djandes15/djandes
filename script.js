@@ -218,6 +218,58 @@ function getProductImageUrls(product) {
     };
 }
 
+// Optimasi URL gambar untuk opsi Box
+function getBoxImageUrls(boxOption) {
+    let additionalImages = [];
+    if (boxOption.gambar_tambahan) {
+        if (Array.isArray(boxOption.gambar_tambahan)) {
+            additionalImages = boxOption.gambar_tambahan;
+        } else if (typeof boxOption.gambar_tambahan === 'string') {
+            try {
+                additionalImages = JSON.parse(boxOption.gambar_tambahan);
+            } catch (e) {
+                additionalImages = [];
+            }
+        }
+    }
+
+    // Gabungkan gambar utama + gambar tambahan
+    const allImages = [];
+    if (boxOption.gambar) allImages.push(boxOption.gambar);
+    additionalImages.forEach(img => {
+        if (img && !allImages.includes(img)) allImages.push(img);
+    });
+
+    if (allImages.length === 0) {
+        allImages.push(CONFIG.DEFAULT_IMAGE);
+    }
+
+    return {
+        thumbnail: getOptimizedImageKitUrl(boxOption.gambar || CONFIG.DEFAULT_IMAGE, CONFIG.IMAGEKIT_OPTIONS.THUMBNAIL),
+        gallery: allImages.map(img => getOptimizedImageKitUrl(img, CONFIG.IMAGEKIT_OPTIONS.GALLERY))
+    };
+}
+
+// Tampilkan modal gambar/galeri untuk Opsi Box
+function showBoxGallery(boxOptionId) {
+    const boxOption = appData.opsiBoxGlobal.find(b => b.id == boxOptionId);
+    if (!boxOption) return;
+
+    const imageUrls = getBoxImageUrls(boxOption);
+    const images = imageUrls.gallery;
+    let currentImageIndex = 0;
+
+    showImageModal(images[currentImageIndex], boxOption.nama);
+
+    if (images.length > 1) {
+        addGalleryNavigation(images, currentImageIndex);
+    }
+}
+
+// Ekspos ke global agar bisa diakses dari tag onclick HTML
+window.showBoxGallery = showBoxGallery;
+
+
 // Preload critical images (logo + 4 produk pertama)
 function preloadCriticalImages() {
     // Preload logo
@@ -1131,14 +1183,11 @@ function setupEventListeners() {
 // =================================================================================
 
 // Fungsi untuk menampilkan modal pilihan box dengan quantity controls
+// Fungsi untuk menampilkan modal pilihan box dengan quantity controls
 function showBoxSelectionModal(productId, callback) {
     const product = appData.products.find(p => p.id == productId);
     if (!product) return;
 
-    const boxOptionsContainer = elements.boxOptionsContainer;
-    boxOptionsContainer.innerHTML = '';
-
-    // Filter opsi box yang berlaku untuk kategori produk
     const applicableBoxOptions = appData.opsiBoxGlobal.filter(boxOption =>
         boxOption.kategori_berlaku.includes(product.category)
     );
@@ -1149,117 +1198,98 @@ function showBoxSelectionModal(productId, callback) {
         return;
     }
 
-    // Tambahkan quantity controls di bagian atas modal
-    const quantityControls = document.createElement('div');
-    quantityControls.className = 'modal-quantity-controls';
-    quantityControls.innerHTML = `
-        <div class="modal-quantity-section">
-            <h4>Jumlah Pesanan</h4>
-            <div class="quantity-controls-centered">
-                <button class="quantity-btn minus" id="modal-minus">-</button>
-                <input type="number" class="quantity-input" id="modal-quantity-input" value="${product.minimal_order}" min="${product.minimal_order}" max="9999">
-                <button class="quantity-btn plus" id="modal-plus">+</button>
-            </div>
-            ${product.minimal_order > 1 ? `<p class="min-order-info">Minimal order: ${product.minimal_order}</p>` : ''}
-        </div>
-    `;
-    boxOptionsContainer.appendChild(quantityControls);
+    const title = document.getElementById('box-selection-title');
+    const container = document.getElementById('box-options-container');
+    const qtyInput = document.getElementById('box-qty-input');
+    const minusBtn = document.getElementById('box-qty-minus');
+    const plusBtn = document.getElementById('box-qty-plus');
+    const searchInput = document.getElementById('box-search-input');
+    const confirmBtn = document.getElementById('box-confirm-btn');
 
+    title.textContent = 'Pilih Box untuk: ' + product.name;
+    qtyInput.value = product.minimal_order || 1;
+    qtyInput.min = product.minimal_order || 1;
+    searchInput.value = '';
 
+    function drawBoxGrid(boxes) {
+        if (boxes.length === 0) {
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--accent-color); padding: 30px; font-size: 0.9rem;">Pencarian tidak ditemukan</div>`;
+            return;
+        }
 
-    // Tambahkan opsi box
-    const boxOptionsGrid = document.createElement('div');
-    boxOptionsGrid.className = 'box-options-grid';
+        container.innerHTML = boxes.map(boxOption => {
+            const optimizedImage = getOptimizedImageKitUrl(boxOption.gambar, { width: 250, quality: 75 });
+            return `
+                <div class="box-option" data-box-id="${boxOption.id}">
+                    <div class="box-option-image">
+                        <img src="${optimizedImage}" alt="${boxOption.nama}" onerror="this.src='${CONFIG.DEFAULT_IMAGE}'" 
+                             style="cursor: zoom-in;" 
+                             onclick="event.stopPropagation(); window.showBoxGallery('${boxOption.id}')">
+                    </div>
+                    <div class="box-option-info">
+                        <h4>${boxOption.nama}</h4>
+                        <span class="box-option-price">+Rp ${boxOption.tambahan_harga.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>`;
+        }).join('');
 
-    applicableBoxOptions.forEach(boxOption => {
-        const boxOptionElement = document.createElement('div');
-        boxOptionElement.className = 'box-option';
-        boxOptionElement.dataset.boxId = boxOption.id;
-
-        const optimizedImage = getOptimizedImageKitUrl(boxOption.gambar, { width: 200, quality: 70 });
-
-        boxOptionElement.innerHTML = `
-            <div class="box-option-image">
-                <img src="${optimizedImage}" alt="${boxOption.nama}" onerror="this.src='${CONFIG.DEFAULT_IMAGE}'">
-            </div>
-            <div class="box-option-info">
-                <h4>${boxOption.nama}</h4>
-                <p class="box-option-price">+Rp ${boxOption.tambahan_harga.toLocaleString('id-ID')}</p>
-            </div>
-        `;
-
-        boxOptionElement.addEventListener('click', function () {
-            // Hapus kelas active dari semua opsi
-            document.querySelectorAll('.box-option').forEach(option => {
-                option.classList.remove('active');
+        container.querySelectorAll('.box-option').forEach(el => {
+            el.addEventListener('click', function () {
+                container.querySelectorAll('.box-option').forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
             });
-
-            // Tambahkan kelas active ke opsi yang dipilih
-            this.classList.add('active');
         });
 
-        boxOptionsGrid.appendChild(boxOptionElement);
-    });
+        const first = container.querySelector('.box-option');
+        if (first) first.classList.add('active');
+    }
 
-    boxOptionsContainer.appendChild(boxOptionsGrid);
+    drawBoxGrid(applicableBoxOptions);
 
-    // Setup quantity controls event listeners
-    const modalQuantityInput = document.getElementById('modal-quantity-input');
-    const modalMinusBtn = document.getElementById('modal-minus');
-    const modalPlusBtn = document.getElementById('modal-plus');
+    searchInput.oninput = function () {
+        const keyword = this.value.toLowerCase().trim();
+        const filtered = applicableBoxOptions.filter(box => box.nama.toLowerCase().includes(keyword));
+        drawBoxGrid(filtered);
+    };
 
-    modalMinusBtn.addEventListener('click', function () {
-        let value = parseInt(modalQuantityInput.value) || product.minimal_order;
-        if (value > product.minimal_order) {
-            modalQuantityInput.value = value - 1;
+    minusBtn.onclick = function () {
+        let value = parseInt(qtyInput.value) || product.minimal_order || 1;
+        const min = product.minimal_order || 1;
+        if (value > min) {
+            qtyInput.value = value - 1;
         }
-    });
+    };
 
-    modalPlusBtn.addEventListener('click', function () {
-        let value = parseInt(modalQuantityInput.value) || product.minimal_order;
-        if (value < 9999) {
-            modalQuantityInput.value = value + 1;
+    plusBtn.onclick = function () {
+        let value = parseInt(qtyInput.value) || product.minimal_order || 1;
+        qtyInput.value = value + 1;
+    };
+
+    qtyInput.oninput = function () {
+        let value = parseInt(this.value) || product.minimal_order || 1;
+        const min = product.minimal_order || 1;
+        if (value < min) {
+            this.value = min;
+            showNotification(`Minimal order untuk produk ini adalah ${min}`, 'warning');
         }
-    });
+    };
 
-    modalQuantityInput.addEventListener('input', function () {
-        let value = parseInt(this.value) || product.minimal_order;
-        if (value < product.minimal_order) {
-            this.value = product.minimal_order;
-            showNotification(`Minimal order untuk produk ini adalah ${product.minimal_order}`, 'warning');
-        } else if (value > 9999) {
-            this.value = 9999;
+    confirmBtn.onclick = function () {
+        const activeCard = container.querySelector('.box-option.active');
+        if (!activeCard) {
+            showNotification('Silakan pilih salah satu opsi box terlebih dahulu', 'warning');
+            return;
         }
-    });
+        const boxId = activeCard.dataset.boxId;
+        const boxOption = applicableBoxOptions.find(b => b.id == boxId);
+        const qty = parseInt(qtyInput.value) || product.minimal_order || 1;
 
-    // Tambahkan tombol konfirmasi
-    const confirmButton = document.createElement('button');
-    confirmButton.className = 'btn btn-primary modal-confirm-btn';
-    confirmButton.innerHTML = 'Tambah ke <i class="fas fa-shopping-cart"></i>';
-    confirmButton.addEventListener('click', function () {
-        const selectedBoxOption = document.querySelector('.box-option.active');
-        const quantity = parseInt(modalQuantityInput.value) || product.minimal_order;
-
-        if (selectedBoxOption) {
-            const boxId = selectedBoxOption.dataset.boxId;
-            const boxOption = applicableBoxOptions.find(option => option.id === boxId);
-            callback(boxOption, quantity);
-            closeBoxSelectionModal();
-        } else {
-            showNotification('Silakan pilih salah satu opsi box', 'warning');
-        }
-    });
-
-    boxOptionsContainer.appendChild(confirmButton);
+        callback(boxOption, qty);
+        closeBoxSelectionModal();
+    };
 
     elements.boxSelectionModal.classList.add('active');
     document.body.style.overflow = 'hidden';
-
-    // Auto-select first box option
-    const firstBoxOption = boxOptionsGrid.querySelector('.box-option');
-    if (firstBoxOption) {
-        firstBoxOption.classList.add('active');
-    }
 }
 
 // Fungsi untuk menutup modal pilihan box
@@ -2003,6 +2033,7 @@ function sendWhatsAppOrder(customerName, pickupDate, pickupTime, refId, customer
     let message = `Halo, saya ingin memesan kue dari ${appData.siteSettings.title}:\n\n`;
     if (refId) {
         message += `📋 *Nomor Referensi Pesanan: ${refId}*\n`;
+        message += `_(Sampaikan nomor ini kepada kasir saat pengambilan)_\n\n`;
     }
     message += `*Data Pemesan:*\n`;
     message += `Nama: ${customerName}\n`;
