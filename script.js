@@ -182,7 +182,7 @@ function initializeElements() {
 // --- IMAGE OPTIMIZATION FUNCTIONS ---
 
 // Fungsi optimasi URL gambar.
-// - URL ImageKit lama: tambahkan parameter transformasi (?tr=)
+// - URL ImageKit lama:  parameter transformasi (?tr=)
 // - URL Supabase (file sudah WebP terkompresi saat upload): kembalikan bersih
 // - URL lain / fallback: dikembalikan apa adanya
 function getOptimizedImageKitUrl(originalUrl, options = {}) {
@@ -204,7 +204,17 @@ function getOptimizedImageKitUrl(originalUrl, options = {}) {
         return `${baseUrl}?tr=${params}`;
     }
 
-    // URL Supabase: gambar sudah dikompresi ke WebP saat upload → kembalikan bersih
+    // Redirect URL Supabase ke Cloudflare Worker Proxy jika dikonfigurasi
+    if (CONFIG.IMAGE_PROXY_URL && originalUrl.includes('supabase.co')) {
+        const cleanUrl = originalUrl.split('?')[0];
+        // Base Supabase Storage URL yang ingin diganti
+        const supabaseBase = `${CONFIG.SUPABASE_URL}/storage/v1/object/public/product-images`;
+        if (cleanUrl.startsWith(supabaseBase)) {
+            return cleanUrl.replace(supabaseBase, CONFIG.IMAGE_PROXY_URL);
+        }
+    }
+
+    // URL lainnya: kembalikan bersih tanpa query params
     return originalUrl.split('?')[0];
 }
 
@@ -325,8 +335,36 @@ function loadCartInfoFromStorage() {
     return {};
 }
 
-// --- DATA LOADING FUNCTIONS (NOW USING SUPABASE) ---
+// --- DATA LOADING FUNCTIONS (NOW USING SUPABASE WITH LOCALCACHE) ---
 async function loadDataFromSupabase() {
+    const CACHE_KEY = 'djandes_supabase_cache';
+    const CACHE_TIME_KEY = 'djandes_supabase_cache_time';
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 menit masa aktif cache
+
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+    const now = Date.now();
+
+    // Gunakan cache jika data tersedia dan masih berlaku
+    if (cachedData && cachedTime && (now - parseInt(cachedTime) < CACHE_DURATION)) {
+        try {
+            const parsed = JSON.parse(cachedData);
+            appData.products = parsed.products || [];
+            appData.categories = parsed.categories || [];
+            appData.opsiBoxGlobal = parsed.opsiBoxGlobal || [];
+            appData.siteSettings = parsed.siteSettings || {};
+            appData.socialMedia = parsed.socialMedia || {};
+            appData.contactInfo = parsed.contactInfo || {};
+            appData.aboutContent = parsed.aboutContent || {};
+
+            window.appData = appData;
+            console.log('✓ Memuat data katalog menggunakan cache LocalStorage.');
+            return;
+        } catch (e) {
+            console.warn('Gagal membaca cache, mengambil data segar dari Supabase...', e);
+        }
+    }
+
     try {
         const client = window.supabaseClient;
 
@@ -345,7 +383,6 @@ async function loadDataFromSupabase() {
 
         // Mapping hasil ke appData
         if (products) {
-            // Mapping images if needed (ensure backward compatibility)
             appData.products = products.map(p => ({
                 ...p,
                 image: (p.images && p.images.length > 0) ? p.images[0] : p.image
@@ -367,8 +404,22 @@ async function loadDataFromSupabase() {
             });
         }
 
+        // Tulis ulang cache lokal dengan data terbaru
+        const dataToCache = {
+            products: appData.products,
+            categories: appData.categories,
+            opsiBoxGlobal: appData.opsiBoxGlobal,
+            siteSettings: appData.siteSettings,
+            socialMedia: appData.socialMedia,
+            contactInfo: appData.contactInfo,
+            aboutContent: appData.aboutContent
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
+        localStorage.setItem(CACHE_TIME_KEY, now.toString());
+
         // Ekspos ke global agar tetap sinkron
         window.appData = appData;
+        console.log('✓ Data berhasil diambil dari Supabase Cloud dan cache lokal diperbarui.');
 
     } catch (error) {
         console.error('Gagal memuat data dari Supabase:', error);
@@ -1311,7 +1362,7 @@ function showSnackBoxModal(productId, callback) {
     const snackBoxComponents = elements.snackBoxComponents;
     snackBoxComponents.innerHTML = '';
 
-    // Tambahkan quantity controls di bagian atas modal
+    //  quantity controls di bagian atas modal
     const quantityControls = document.createElement('div');
     quantityControls.className = 'modal-quantity-controls';
     quantityControls.innerHTML = `
@@ -1516,7 +1567,7 @@ function handleAddDeleteButton(productId) {
         if (product.opsi_produk_aktif) {
             showBoxSelectionModal(productId, function (boxOption, quantity) {
                 if (boxOption) {
-                    // Tambahkan ke keranjang dengan box option
+                    //  ke keranjang dengan box option
                     addProductToCartWithBox(product, boxOption, quantity);
                 }
             });
@@ -1538,7 +1589,7 @@ function handleAddDeleteButton(productId) {
             // Setelah komponen dipilih, tampilkan modal pilihan box
             showBoxSelectionModal(productId, function (boxOption) {
                 if (boxOption) {
-                    // Tambahkan ke keranjang dengan box option dan komponen
+                    //  ke keranjang dengan box option dan komponen
                     addProductToCartWithBoxAndComponents(product, boxOption, selectedComponentIds, quantity);
                 }
             });
@@ -1553,7 +1604,7 @@ function addProductToCart(product, quantity) {
     updateCart();
     updateProductButtons();
     saveCartToStorage();
-    showNotification(`${quantity} ${product.name} ditambahkan`, 'success');
+    showNotification(`${quantity} ${product.name} ditambahkan.`, 'success');
 }
 
 // Fungsi untuk menambahkan produk ke keranjang dengan box
