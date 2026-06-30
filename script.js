@@ -1575,7 +1575,7 @@ function addProductToCartWithBox(product, boxOption, quantity) {
     saveCartToStorage();
 
     const totalPrice = (product.price + boxOption.tambahan_harga) * quantity;
-    showNotification(`${quantity} ${product.name} dengan ${boxOption.nama} ditambahkan ke keranjang.`, 'success');
+    showNotification(`${quantity} ${product.name} ditambahkan.`, 'success');
 }
 
 // Fungsi untuk menambahkan produk ke keranjang dengan box dan komponen
