@@ -6,6 +6,7 @@ window.CONFIG = {
     // Image Optimization (ImageKit tetap dipakai untuk resize otomatis)
     IMAGEKIT_URL_ENDPOINT: 'https://ik.imagekit.io/robingladys/',
     DEFAULT_IMAGE: 'img/gambar.jpg',
+    IMAGE_PROXY_URL: 'https://djandes.turuxballo.workers.dev',
 
     // Admin Password (Gunakan password lama Anda)
     ADMIN_PASSWORD: 'q',
