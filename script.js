@@ -1920,6 +1920,10 @@ async function saveOnlineOrderToSupabase(refId, customerName, pickupDate, pickup
         debt: totalBilling,
         change: 0,
         items: itemsPayload,
+        cart_info: {
+            cart: appData.cart,
+            cartInfo: appData.cartInfo || {}
+        },
         source: 'online',
         updated_at: new Date().toISOString()
     };
