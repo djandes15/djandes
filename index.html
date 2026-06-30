@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DJANDES - Sweet & Savoury - Katalog dan Harga</title>
+    <title>DJANDES - Sweet & Savoury - Katalog dan harga</title>
     <link rel="manifest" href="manifest-catalog.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -226,14 +226,44 @@
     <!-- ================================================================================= -->
     <div class="box-selection-modal" id="box-selection-modal">
         <div class="box-selection-content">
+            <!-- Header -->
             <div class="box-selection-header">
-                <h3>Menu Box</h3>
+                <h3 id="box-selection-title">Pilih Box</h3>
                 <button class="close-box-selection" id="close-box-selection">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="box-options-container" id="box-options-container">
-                <!-- Box options will be dynamically added here -->
+
+            <!-- Qty + Search sejajar (row) — sama seperti POS desktop -->
+            <div class="box-modal-controls-row">
+                <!-- Qty Section -->
+                <div class="modal-qty-block">
+                    <span class="qty-label">Jumlah Pesanan</span>
+                    <div class="qty-controls">
+                        <button class="qty-btn" id="box-qty-minus">−</button>
+                        <input type="number" class="qty-input" id="box-qty-input" value="1">
+                        <button class="qty-btn" id="box-qty-plus">+</button>
+                    </div>
+                </div>
+                <!-- Search Bar -->
+                <div class="modal-search-block">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="box-search-input" placeholder="Cari nama box...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box Grid -->
+            <div class="box-options-grid" id="box-options-container">
+                <!-- dynamically filled -->
+            </div>
+
+            <!-- Footer: Batal + Tambah (sama seperti POS) -->
+            <div class="box-selection-footer">
+                <button class="box-cancel-btn"
+                    onclick="document.getElementById('box-selection-modal').classList.remove('active'); document.body.style.overflow='auto'">Batal</button>
+                <button class="box-confirm-btn" id="box-confirm-btn">✅ Tambah ke Keranjang</button>
             </div>
         </div>
     </div>
