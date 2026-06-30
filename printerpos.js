@@ -41,12 +41,12 @@
 
         if (_connected) {
             statusDot.className = 'indicator-dot dot-connected mr-1';
-            statusText.textContent = '🖨️: Terhubung ✓';
+            statusText.textContent = 'Printer: Terhubung ✓';
             connectBtn.textContent = 'Putuskan';
         } else {
             statusDot.className = 'indicator-dot dot-disconnected mr-1';
-            statusText.textContent = isBluetoothAvailable() ? '🖨️: Terputus' : 'Bluetooth tidak tersedia (HTTPS)';
-            connectBtn.textContent = 'Hubungkan 🖨️';
+            statusText.textContent = isBluetoothAvailable() ? 'Printer: Belum terhubung' : 'Bluetooth tidak tersedia (HTTPS)';
+            connectBtn.textContent = 'Hubungkan Printer';
         }
     }
 
@@ -199,7 +199,8 @@
 
             line(product.name.toUpperCase().substring(0, 32));
             if (boxOptionName) {
-                line(`  BOX: ${boxOptionName.toUpperCase()}`);
+                const priceLabel = boxOptionPrice > 0 ? ` (+${rupiah(boxOptionPrice)})` : '';
+                line(`  BOX: ${boxOptionName.toUpperCase()}${priceLabel}`);
             }
             if (components && components.length > 0) {
                 const compNames = components.map(cid => {
@@ -380,7 +381,8 @@
 
             let extraHtml = '';
             if (boxOptionName) {
-                extraHtml += `<tr><td colspan="2" style="font-size:9px; color:#555; padding-left:8px; text-transform:none;">BOX: ${boxOptionName.toUpperCase()}</td></tr>`;
+                const priceLabel = boxOptionPrice > 0 ? ` (+${rupiah(boxOptionPrice)})` : '';
+                extraHtml += `<tr><td colspan="2" style="font-size:9px; color:#555; padding-left:8px; text-transform:none;">BOX: ${boxOptionName.toUpperCase()}${priceLabel}</td></tr>`;
             }
             if (components && components.length > 0) {
                 const compNames = components.map(cid => {
