@@ -714,6 +714,30 @@
             setTimeout(() => toast.classList.add('hidden'), 4000);
         };
 
+        // --- Fungsi Proxy Gambar ke Cloudflare Worker ---
+        // Menggantikan URL Supabase Storage dengan URL Cloudflare Worker
+        // agar gambar dimuat dari CDN Cloudflare (hemat bandwidth Supabase)
+        function getProxiedImageUrl(originalUrl) {
+            if (!originalUrl) return window.CONFIG.IMAGEKIT_URL_ENDPOINT + window.CONFIG.DEFAULT_IMAGE;
+
+            // Jika URL lokal (tidak berawalan http), tambahkan ImageKit endpoint
+            if (!originalUrl.startsWith('http')) {
+                return window.CONFIG.IMAGEKIT_URL_ENDPOINT + originalUrl;
+            }
+
+            // Jika URL berasal dari Supabase Storage, alihkan ke Cloudflare Worker
+            if (window.CONFIG.IMAGE_PROXY_URL && originalUrl.includes('supabase.co')) {
+                const cleanUrl = originalUrl.split('?')[0];
+                const supabaseBase = `${window.CONFIG.SUPABASE_URL}/storage/v1/object/public/product-images`;
+                if (cleanUrl.startsWith(supabaseBase)) {
+                    return cleanUrl.replace(supabaseBase, window.CONFIG.IMAGE_PROXY_URL);
+                }
+            }
+
+            // URL lainnya (ImageKit, dll) dikembalikan bersih
+            return originalUrl.split('?')[0];
+        }
+
         function updateOnlineStatus() {
             const badge = document.getElementById('internet-status-badge');
             if (navigator.onLine) {
@@ -946,9 +970,7 @@
                 const qty = isCustom ? getProductQtyInCart(p.id) : (window.appData.cart[p.id] || 0);
                 const isHabis = p.status_stok === 'habis';
                 const isEditing = window.appData.editingPrices[p.id];
-                let imageUrl = p.image || '';
-                if (imageUrl && !imageUrl.startsWith('http')) imageUrl = window.CONFIG.IMAGEKIT_URL_ENDPOINT + imageUrl;
-                else if (!imageUrl) imageUrl = window.CONFIG.IMAGEKIT_URL_ENDPOINT + window.CONFIG.DEFAULT_IMAGE;
+                let imageUrl = getProxiedImageUrl(p.image || p.images?.[0] || '');
 
                 const isLocked = window.appData.isPelunasanMode || window.appData.isReadOnlyMode;
 
