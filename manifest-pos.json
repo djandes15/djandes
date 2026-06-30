@@ -16,7 +16,7 @@
         }
     ],
     "start_url": "/pos",
-    "scope": "/pos.html",
+    "scope": "/pos",
     "background_color": "#D97706",
     "theme_color": "#D97706",
     "display": "standalone",
