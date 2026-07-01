@@ -1548,7 +1548,7 @@ function handleAddDeleteButton(productId) {
     if (isInCart) {
         if (confirm('Hapus produk ini dari keranjang?')) {
             removeProductFromCart(productId);
-            showNotification('Produk dihapus dari keranjang', 'success');
+            showNotification('Produk dihapus', 'success');
         }
         return;
     }
@@ -1604,7 +1604,7 @@ function addProductToCart(product, quantity) {
     updateCart();
     updateProductButtons();
     saveCartToStorage();
-    showNotification(`${quantity} ${product.name} ditambahkan.`, 'success');
+    showNotification(`ditambahkan.`, 'success');
 }
 
 // Fungsi untuk menambahkan produk ke keranjang dengan box
@@ -1626,7 +1626,7 @@ function addProductToCartWithBox(product, boxOption, quantity) {
     saveCartToStorage();
 
     const totalPrice = (product.price + boxOption.tambahan_harga) * quantity;
-    showNotification(`${quantity} ${product.name} ditambahkan.`, 'success');
+    showNotification(`ditambahkan.`, 'success');
 }
 
 // Fungsi untuk menambahkan produk ke keranjang dengan box dan komponen
