@@ -17,8 +17,8 @@
     ],
     "start_url": "/pos",
     "scope": "/pos",
-    "background_color": "#D4AF37,
-    "theme_color": "#D4AF37",
+    "background_color": "#7a5af5,
+    "theme_color": "#7a5af5",
     "display": "standalone",
     "orientation": "portrait"
 }
