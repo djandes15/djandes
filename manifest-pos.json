@@ -3,13 +3,13 @@
     "name": "DJANDES POS",
     "icons": [
         {
-            "src": "/img/gambar.jpg",
+            "src": "/img/gambarp.jpg",
             "type": "image/png",
             "sizes": "512x512",
             "purpose": "any maskable"
         },
         {
-            "src": "/img/gambar.jpg",
+            "src": "/img/gambarp.jpg",
             "type": "image/png",
             "sizes": "192x192",
             "purpose": "any maskable"
@@ -17,8 +17,8 @@
     ],
     "start_url": "/pos",
     "scope": "/pos",
-    "background_color": "#D97706",
-    "theme_color": "#D97706",
+    "background_color": "#D4AF37,
+    "theme_color": "#D4AF37",
     "display": "standalone",
     "orientation": "portrait"
 }
