@@ -1689,7 +1689,6 @@ input[type="number"] {
     align-items: center;
     margin-bottom: 12px;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--accent-color);
 }
 
 .cart-item:last-child {
