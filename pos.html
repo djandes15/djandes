@@ -314,7 +314,7 @@
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-20 sm:pb-12">
 
     <header
-        class="bg-blue-600 text-white shadow-md sticky top-0 z-50 px-3 py-2.5 flex justify-between items-center gap-2">
+        class="bg-amber-600 hover:bg-amber-700 rounded-x text-white shadow-md sticky top-0 z-50 px-3 py-2.5 flex justify-between items-center gap-2">
         <!-- Kiri: Judul + Status Internet -->
         <div class="flex items-center gap-2 min-w-0">
             <h1 class="text-base sm:text-xl font-bold tracking-wide whitespace-nowrap">
@@ -340,27 +340,27 @@
 
             <!-- Toggle Dark Mode -->
             <button id="darkmode-toggle-btn" onclick="toggleDarkMode()"
-                class="bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap"
+                class="bg-amber-800 hover:bg-amber-900 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap"
                 title="Ganti Mode Gelap/Terang">
                 🌒  
             </button>
 
             <!-- Admin POS -->
             <button id="admin-pos-btn" onclick="handleAdminPosAuth()"
-                class="bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap">
+                class="bg-amber-800 hover:bg-amber-900 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap">
                 🔒 <span class="hidden sm:inline">Admin</span>
             </button>
 
             <!-- Ke Halaman Admin -->
             <a href="gemini.html" target="_blank"
-                class="bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap inline-flex items-center gap-1"
+                class="bg-amber-800 hover:bg-ambwe-900 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap inline-flex items-center gap-1"
                 title="Buka Panel Admin">
-                ⚙️ <span class="hidden sm:inline">Panel</span>
+                ⚒️   <span class="hidden sm:inline">Panel</span>
             </button>
 
             <!-- Ke Halaman Web -->
             <a href="index.html" target="_blank"
-                class="bg-yellow-600 hover:bg-yellow-700 text-black text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap inline-flex items-center gap-1"
+                class="bg-amber-800 hover:bg-amber-900 text-black text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1.5 rounded transition whitespace-nowrap inline-flex items-center gap-1"
                 title="Buka Website">
                 🏚️   <span class="hidden sm:inline">Web</span>
             </a>
@@ -986,8 +986,8 @@
                     actionHtml = `
                         <div class="flex items-center justify-between mt-1 w-full gap-2">
                             ${qty > 0 ? `<span class="text-xs font-semibold text-amber-600 px-1 whitespace-nowrap">Di Struk: ${qty}</span>` : ''}
-                            <button onclick="${isLocked ? 'return' : `window.handlePosCustomProduct(${p.id})`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${qty > 0 ? 'px-2 py-1 text-[10px]' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed text-gray-400' : ''}">
-                                ${qty > 0 ? 'Kustom Lagi' : 'Kustomisasi'}
+                            <button onclick="${isLocked ? 'return' : `window.handlePosCustomProduct(${p.id})`}" class="bg-amber-600 hover:bg-amber-700 text-white font-bold ${qty > 0 ? 'px-2 py-1 text-[10px]' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed text-gray-400' : ''}">
+                                ${qty > 0 ? 'Kustom Lagi' : 'Tambah'}
                             </button>
                         </div>
                     `;
@@ -998,7 +998,7 @@
                                 <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-7 h-7 rounded-lg text-sm ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
                                 <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded py-1 focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
                             ` : ''}
-                            <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold ${qty > 0 ? 'w-7 h-7' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="bg-amber-600 hover:bg-amber-700 text-white font-bold ${qty > 0 ? 'w-7 h-7' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
                                 ${qty > 0 ? '+' : 'Tambah'}
                             </button>
                         </div>
@@ -1057,8 +1057,8 @@
                     actionHtml = `
                         <div class="flex items-center justify-center gap-1">
                             ${qty > 0 ? `<span class="text-[10px] font-bold text-amber-600 mr-1">${qty}x</span>` : ''}
-                            <button onclick="${isLocked ? 'return' : `window.handlePosCustomProduct(${p.id})`}" class="bg-blue-600 hover:bg-blue-705 rounded px-2 py-1 text-xs font-bold text-white ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
-                                ${qty > 0 ? 'Kustom' : 'Kustom'}
+                            <button onclick="${isLocked ? 'return' : `window.handlePosCustomProduct(${p.id})`}" class="bg-amber-600 hover:bg-amber-705 rounded px-2 py-1 text-xs font-bold text-white ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
+                                ${qty > 0 ? 'Kustom' : 'Tambah'}
                             </button>
                         </div>
                     `;
@@ -2571,10 +2571,10 @@
         class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[9990]"
         onclick="if(event.target===this) window.closePosBoxModal()">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full flex flex-col max-h-[90vh] overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-amber-50">
-                <h3 id="pos-box-modal-title" class="font-bold text-sm text-amber-800 line-clamp-1 pr-2">Pilih Box</h3>
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-amber-600 hover:bg-amber-700 rounded-xl">
+                <h3 id="pos-box-modal-title" class="font-bold text-sm text-white line-clamp-1 pr-2">Pilih Box</h3>
                 <button onclick="window.closePosBoxModal()"
-                    class="text-gray-400 hover:text-red-500 text-xl font-bold leading-none">&times;</button>
+                    class="text-white-400 hover:text-white-500 text-xl font-bold leading-none">&times;</button>
             </div>
 
             <div
@@ -2586,12 +2586,12 @@
                     <div class="flex items-center gap-2">
                         <button
                             onclick="(function(){const qi=document.getElementById('pos-box-qty');const m=parseInt(qi.min)||1;if(parseInt(qi.value)>m)qi.value=parseInt(qi.value)-1;})()"
-                            class="w-9 h-9 rounded-xl bg-gray-200 hover:bg-gray-300 active:scale-95 font-bold text-gray-700 flex items-center justify-center text-xl transition-all shadow-xs">−</button>
+                            class="w-9 h-9 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-95 font-bold text-white flex items-center justify-center text-xl transition-all shadow-xs">−</button>
                         <input type="number" id="pos-box-qty" min="1" value="1"
                             class="w-16 text-center text-base font-extrabold border-2 border-gray-300 rounded-xl focus:outline-none focus:border-amber-400 py-1.5 focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         <button
                             onclick="(function(){const qi=document.getElementById('pos-box-qty');qi.value=parseInt(qi.value)+1;})()"
-                            class="w-9 h-9 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 font-bold text-white flex items-center justify-center text-xl transition-all shadow-xs">+</button>
+                            class="w-9 h-9 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-95 font-bold text-white flex items-center justify-center text-xl transition-all shadow-xs">+</button>
                     </div>
                 </div>
                 <!-- Box Search Bar -->
@@ -2599,7 +2599,7 @@
                     <span
                         class="absolute inset-y-0 left-3 flex items-center pl-0.5 pointer-events-none text-gray-400 text-sm">🔍</span>
                     <input type="text" id="pos-box-search-input" placeholder="Cari nama box..."
-                        class="w-full pl-9 pr-3 py-2.5 border-2 border-gray-200 rounded-xl text-xs focus:outline-none focus:border-amber-400 bg-white text-gray-800 font-semibold shadow-xs">
+                        class="w-full pl-9 pr-3 py-2.5 border-2 border-gray-200 rounded-xl text-xs focus:outline-none focus:border-amber-600 bg-white text-gray-800 font-semibold shadow-xs">
                 </div>
             </div>
 
@@ -2609,8 +2609,8 @@
                 <button onclick="window.closePosBoxModal()"
                     class="px-4 py-2 border-2 border-gray-200 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-105 hover:text-gray-700 transition">Batal</button>
                 <button id="pos-box-confirm-btn"
-                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm shadow transition">
-                    ✅ Tambah ke Keranjang
+                    class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-sm shadow transition">
+                    Tambah ke Keranjang
                 </button>
             </div>
         </div>
