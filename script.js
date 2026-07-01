@@ -1823,7 +1823,7 @@ function toggleCartFromNavbar() {
                 closeDescriptionModal();
             }
         } else {
-            showNotification('Keranjang belanja kosong!', 'warning');
+            showNotification('🛒 kosong!', 'warning');
         }
     }
 }
@@ -1923,7 +1923,7 @@ function showCheckoutModal() {
 
     const totalItems = getTotalItems();
     if (totalItems === 0) {
-        showNotification('Keranjang belanja kosong!', 'error');
+        showNotification('🛒 kosong!', 'error');
         return;
     }
 
