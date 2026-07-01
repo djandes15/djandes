@@ -26,6 +26,7 @@
     --error-color: #E53935;
     --success-color: #43A047;
     --warning-color: #FB8C00;
+    --warningori-color: #43A047;
     --info-color: #1E88E5;
     --border-radius: 12px;
     --transition: all 0.3s ease;
@@ -2034,7 +2035,7 @@ footer {
 }
 
 .notification.warning {
-    background: var(--warning-color);
+    background: var(--warningori-color);
 }
 
 .notification.error {
