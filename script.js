@@ -1737,7 +1737,7 @@ function deleteFromCartByKey(key) {
         updateCart();
         updateProductButtons();
         saveCartToStorage();
-        showNotification('Item dihapus dari keranjang', 'success');
+        showNotification('Item dihapus', 'success');
     }
 }
 
@@ -1754,7 +1754,7 @@ function updateCartQtyByKey(key, newQty) {
         if (appData.cartInfo && appData.cartInfo[key]) {
             delete appData.cartInfo[key];
         }
-        showNotification('Item dihapus dari keranjang', 'success');
+        showNotification('Item dihapus', 'success');
     } else {
         if (newQty < minOrder) {
             newQty = minOrder;
