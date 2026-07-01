@@ -995,7 +995,7 @@
                     actionHtml = `
                         <div class="flex items-center justify-between mt-1 w-full">
                             ${qty > 0 ? `
-                                <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-7 h-7 rounded-lg text-sm ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
+                                <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, -1)`}" class="bg-amber-600 hover:bg-amber-700 text-white font-bold w-7 h-7 rounded-lg text-sm ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">-</button>
                                 <input type="number" min="0" value="${qty}" onchange="window.updateCartDirect(${p.id}, this.value)" class="w-10 text-center text-xs font-bold border border-gray-300 rounded py-1 focus:outline-none focus:ring-1 focus:ring-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" ${isLocked ? 'disabled' : ''}>
                             ` : ''}
                             <button onclick="${isLocked ? 'return' : `updateCart(${p.id}, 1)`}" class="bg-amber-600 hover:bg-amber-700 text-white font-bold ${qty > 0 ? 'w-7 h-7' : 'w-full py-1 text-xs'} rounded-lg transition ${isLocked ? 'opacity-30 cursor-not-allowed' : ''}">
