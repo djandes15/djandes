@@ -3,13 +3,13 @@
     "name": "DJANDES KATALOG",
     "icons": [
         {
-            "src": "/img/gambark.jpg",
+            "src": "/img/gambarp.jpg",
             "type": "image/png",
             "sizes": "512x512",
             "purpose": "any maskable"
         },
         {
-            "src": "/img/gambark.jpg",
+            "src": "/img/gambarp.jpg",
             "type": "image/png",
             "sizes": "192x192",
             "purpose": "any maskable"
@@ -17,8 +17,8 @@
     ],
     "start_url": "/pos",
     "scope": "/pos",
-    "background_color": "#5D4037",
-    "theme_color": "#5D4037",
+    "background_color": "#7a5af5",
+    "theme_color": "#7a5af5",
     "display": "standalone",
     "orientation": "portrait"
 }
