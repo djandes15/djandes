@@ -1058,12 +1058,12 @@ input[type="number"] {
 /* Tombol Batal — persis seperti POS */
 .box-cancel-btn {
     padding: 8px 14px;
-    border: 2px solid #e5e7eb;
+    border: none;
     border-radius: 10px;
     font-size: 0.78rem;
     font-weight: 700;
-    color: #6b7280;
-    background: transparent;
+    color: #ffffff;
+    background: #4E342E;
     cursor: pointer;
     transition: all 0.15s ease;
     white-space: nowrap;
@@ -1071,8 +1071,8 @@ input[type="number"] {
 }
 
 .box-cancel-btn:hover {
-    background: #f3f4f6;
-    color: #374151;
+    background: #1A0E0A;
+    color: #f3f4f6;
 }
 
 /* Tombol Tambah ke Keranjang — warna tombol Tambah Produk di katalog */
@@ -1091,8 +1091,8 @@ input[type="number"] {
 }
 
 .box-confirm-btn:hover {
-    background: #D4AF37;
-    color: #1A0E0A;
+    background: #1A0E0A;
+    color: #f3f4f6;
 }
 
 .box-confirm-btn:active {
