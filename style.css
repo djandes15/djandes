@@ -853,11 +853,6 @@ nav a:hover {
     line-height: 1;
 }
 
-#box-qty-plus {
-    background: #D4AF37;
-    color: #1A0E0A;
-}
-
 .qty-btn:hover {
     opacity: 0.85;
 }
